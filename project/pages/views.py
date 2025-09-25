@@ -31,6 +31,8 @@ def activateEmail(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = get_user_model().objects.get(pk=uid)
+        role = user.role
+        print(role)
         print("1")
     except:
         user = None
@@ -40,8 +42,11 @@ def activateEmail(request, uidb64, token):
         user.is_active = True
         print("3")
         user.save()
-
         messages.success(request, "Merce d'avoir vérifier votre Email!, tu peux s'incrire maintenant!")
+        if role == "Organizer":
+            Organizer.objects.create(user=user)
+        elif role == "Participant":
+            Racer.objects.create(user=user)
         return redirect('loginPage')
     else:
         print(4)
@@ -101,6 +106,12 @@ def registerPage(request):
             email = form.cleaned_data.get('email')
             request.session['pending_email'] = email  # Store email in session
             send_activation_email(request, user, email)
+            # Create role-specific object
+            role = form.cleaned_data.get("role")
+            if role == "Organizer":
+                Organizer.objects.create(user=user)
+            elif role == "Participant":
+                Racer.objects.create(user=user)
             return redirect('activ')
         else:
             print(form.errors)  # Debugging: Prints form errors in console
@@ -137,6 +148,9 @@ def loginPage(request):
             messages.info(request, 'Username OR password is incorrect')
 
     return render(request, 'pages/login.html', context={})
+
+def index(request):
+    return render(request, 'pages/index.html')
 
 @login_required
 def RacerDashboard(request):

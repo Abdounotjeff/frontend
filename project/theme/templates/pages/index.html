@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Home | RACER{% endblock title %}
+
+{% block scripts %}
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="{% static "css/dist/index.css" %}">
+    <script src="{% static "js/swiper.js" %}"></script>
+
+{% endblock scripts %}
+
+
+{% block content %}
+
+
+
+    <main class="hero-bg flex flex-col justify-center bg-center bg-cover items-center w-full py-40 space-y-6">
+        <h1 class="text-6xl text-white text-center">JOIN THE RACE<br><span class="text-violet-400">WITH ONE CLICK</span></h1>
+        <a href="#" class="px-6 py-2 rounded-full bg-violet-500 hover:bg-violet-900 duration-300 text-white">View More</a>
+    </main>
+    <!-- hero end -->
+
+    <!-- about start -->
+    <section id="About" class="flex flex-col justify-center items-center text-center w-full py-20">
+        <h1 class="text-4xl font-bold mb-8 text-violet-500">About Us</h1>
+        <div class="flex flex-col md:flex-row space-y-8 md:space-y-0 md:space-x-5 mx-auto px-10">
+            <div class="flex flex-col border border-gray-400 rounded-xl p-6 w-full md:w-[500px] h-[300px] overflow-y-scroll">
+                <p class="text-start text-gray-500">Welcome to <b>Racer</b>, the first-ever Algerian race-hosting platform! We are proud to bring a diverse range of competitive events to athletes and enthusiasts across the nation. Whether you are passionate about marathons, triathlons, rallies, swimming, cycling, or motorcycling races, we have something for everyone.
+
+                    At <b>Racer</b>, our mission is to promote the spirit of competition and athleticism in Algeria. We believe in providing top-notch race experiences, ensuring every participant enjoys a seamless and exhilarating event. Our team is dedicated to organizing and hosting high-quality races that challenge and inspire athletes of all levels.
+                    
+                    Join us on this exciting journey as we pave the way for a vibrant racing community in Algeria. Lace up your running shoes, tune up your bike, or rev your engine—let's race together!</p>
+            </div>
+            <div class="w-full md:w-[500px] h-[300px] rounded-xl overflow-hidden">
+                <img src="./dist/img/about.jpg" class="w-full h-full object-cover" alt="About Us">
+            </div>
+        </div>
+    </section>
+    <!-- about end -->
+
+   <!-- upcoming events start -->
+   <section class="w-full py-20 bg-gray-50 bg-center bg-cover up-bg" >
+    <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold text-white">All Categories</h2>
+    </div>
+    <div class="swiper-container px-10 py-10">
+        <div class="swiper-wrapper  space-x-10 px-10 py-10 event">
+            <!-- Event card -->
+            <div class="swiper-slide flex flex-col event-card  bg-cover min-w-[500px] bg-center p-6 rounded-lg shadow-lg transform ease-in transition-all duration-300 event1-bg">
+                <div class="h-40 rounded-t-lg mb-4"></div>
+                <h3 class="text-2xl font-bold mb-3 text-white">Rally</h3>
+                <p class="text-violet-400 mb-4">Join the ultimate car racing championship.</p>
+                <a href="./champions.html" class="text-violet-200 hover:underline">Learn More</a>
+            </div>
+            <!-- Event card -->
+            <div class="swiper-slide flex flex-col event-card  bg-cover min-w-[500px] bg-center p-6 rounded-lg shadow-lg transform ease-in transition-all duration-300 event2-bg">
+                <div class="h-40 rounded-t-lg mb-4"></div>
+                <h3 class="text-2xl font-bold mb-3 text-white">Motorcycle Racing</h3>
+                <p class="text-violet-400 mb-4">Experience the thrill of motorcycle racing.</p>
+                <a href="./champions.html" class="text-violet-200 hover:underline">Learn More</a>
+            </div>
+            <!-- Event card -->
+            <div class="swiper-slide flex flex-col event-card  bg-cover min-w-[500px] bg-center p-6 rounded-lg shadow-lg transform ease-in transition-all duration-300 event3-bg">
+                <div class="h-40 rounded-t-lg mb-4"></div>
+                <h3 class="text-2xl font-bold mb-3 text-white">Cycling</h3>
+                <p class="text-violet-400 mb-4">Compete in exciting cycling races.</p>
+                <a href="#" class="text-violet-200 hover:underline">Learn More</a>
+            </div>
+            <!-- Event card -->
+            <div class="swiper-slide flex flex-col event-card  bg-cover min-w-[500px] bg-center p-6 rounded-lg shadow-lg transform ease-in transition-all duration-300 event4-bg">
+                <div class="h-40 rounded-t-lg mb-4"></div>
+                <h3 class="text-2xl font-bold mb-3 text-white">Marathons</h3>
+                <p class="text-violet-400 mb-4">Run in marathons across the Country.</p>
+                <a href="#" class="text-violet-200 hover:underline">Learn More</a>
+            </div>
+            <!-- Event card -->
+            <div class="swiper-slide flex flex-col event-card  bg-cover min-w-[500px] bg-center p-6 rounded-lg shadow-lg transform ease-in transition-all duration-300 event5-bg">
+                <div class="h-40 rounded-t-lg mb-4"></div>
+                <h3 class="text-2xl font-bold mb-3 text-white">Triathlon</h3>
+                <p class="text-violet-400 mb-4">Experience the ultimate Endurance Racing.</p>
+                <a href="#" class="text-violet-200 hover:underline">Learn More</a>
+            </div>
+            <!-- Event card -->
+            <div class="swiper-slide flex flex-col event-card  bg-cover min-w-[500px] bg-center p-6 rounded-lg shadow-lg transform ease-in transition-all duration-300 event6-bg">
+                <div class="h-40 rounded-t-lg mb-4"></div>
+                <h3 class="text-2xl font-bold mb-3 text-white">Swiming</h3>
+                <p class="text-violet-400 mb-4">Bring your Swiming experience to the test.</p>
+                <a href="#" class="text-violet-200 hover:underline">Learn More</a>
+            </div>
+        </div>
+        <!-- Add Pagination -->
+        <div class="swiper-pagination"></div>
+    </div>
+</section>
+
+    <!-- stor start -->
+    <!-- stor end -->
+
+    <!-- contact start -->
+    <section id="contact" class="flex flex-col items-center py-20 px-10 bg-gray-100">
+        <h1 class="font-bold text-3xl text-violet-500 mb-8 text-center">CONTACT</h1>
+        <div class="w-full md:w-1/2 bg-white rounded-lg p-6 shadow-md">
+            <form action="#" class="flex flex-col space-y-4">
+                <label for="name" class="font-semibold">Your Name:</label>
+                <input type="text" name="name" id="name" class="rounded-xl h-11 p-2 shadow-inner shadow-gray-400 focus:outline-none" placeholder="Enter your name..." required>
+                <label for="email" class="font-semibold">Your Email:</label>
+                <input type="email" name="email" id="email" class="rounded-xl h-11 p-2 shadow-inner shadow-gray-400 focus:outline-none" placeholder="Enter your email" required>
+                <label for="message" class="font-semibold">Your Message:</label>
+                <textarea name="message" id="message" class="rounded-xl h-[100px] md:h-auto p-2 shadow-inner shadow-gray-400 focus:outline-none" placeholder="Enter your message" required></textarea>
+                <button type="submit" class="w-[100px] bg-violet-500 hover:bg-violet-800 duration-300 mt-3 rounded-lg text-white hover:scale-105 transition-transform">SUBMIT</button>
+            </form>
+        </div>
+    </section>
+    <!-- contact end -->
+
+    {% endblock content %}
+    <!-- Swiper JS -->
+    
+</body>
+</html>

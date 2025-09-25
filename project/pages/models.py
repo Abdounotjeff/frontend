@@ -24,7 +24,7 @@ TYPE = (
 class CustomUser(AbstractUser):
     email = models.EmailField()
     role = models.CharField(choices=ROLE_CHOICES, default="Participant")
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.username
@@ -50,7 +50,7 @@ class Organizer(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     tel = models.CharField(max_length=10,default="0")
     carte_biometrique = models.ImageField()
-    date_joined = models.DateField()
+    date_joined = models.DateField(auto_now_add=True)
     pfp = models.ImageField(upload_to="pfp")
     bio = models.TextField()
 
@@ -64,7 +64,7 @@ class Racer(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     tel = models.CharField(max_length=10,default="0")
     carte_biometrique = models.ImageField()
-    date_joined = models.DateField()
+    date_joined = models.DateField(auto_now_add=True)
     pfp = models.ImageField(upload_to="pfp")
     bio = models.TextField()
     date_birth = models.DateField()

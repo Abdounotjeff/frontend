@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+
+*{
+    font-family: "Raleway", sans-serif;
+}
+.hero-bg {
+    background-image: linear-gradient(rgba(56, 56, 56, 0.6), rgba(56, 56, 56, 0.6)), url('./img/hero.jpg');
+}
+
+.up-bg {
+    background-image: linear-gradient(rgba(56, 56, 56, 0.6), rgba(56, 56, 56, 0.6)), url('./img/pexels-daniel-43199-217869.jpg');
+}
+
+
+.event1-bg {
+    background-image: linear-gradient(rgba(56, 56, 56, 0.203) 70%, rgba(56, 56, 56, 0.6)), url('./img/Rallye_Cardabelles.jpg');
+}
+.event2-bg {
+    background-image: linear-gradient(rgba(56, 56, 56, 0.203) 70%, rgba(56, 56, 56, 0.6)), url('./img/KTM-RC16-Red-Bull-MotoGP-Philip-Platzer-scaled.webp');
+}
+.event3-bg {
+    background-image: linear-gradient(rgba(56, 56, 56, 0.203) 70%, rgba(56, 56, 56, 0.6)), url('./img/hero.jpg');
+}
+.event4-bg {
+    background-image: linear-gradient(rgba(56, 56, 56, 0.203) 70%, rgba(56, 56, 56, 0.6)), url('./img/1444x920_le-depart-du-marathon-de-paris-a-lieu-en-bas-de-l-arc-de-triomphe.webp');
+}
+.event5-bg {
+    background-image: linear-gradient(rgba(56, 56, 56, 0.203) 70%, rgba(56, 56, 56, 0.6)), url('./img/triathlon-for-beginners-2x.jpg');
+}
+.event6-bg {
+    background-image: linear-gradient(rgba(56, 56, 56, 0.203) 70%, rgba(56, 56, 56, 0.6)), url('./img/pexels-kindelmedia-9030291.jpg');
+}
+
+
+ 
+
+.event1-bg:hover {
+    background-image: linear-gradient(rgba(56, 56, 56, 0.806), rgba(56, 56, 56, 0.6)), url('./img/Rallye_Cardabelles.jpg');
+}
+.event2-bg:hover {
+    background-image: linear-gradient(rgba(56, 56, 56, 0.806), rgba(56, 56, 56, 0.6)), url('./img/KTM-RC16-Red-Bull-MotoGP-Philip-Platzer-scaled.webp');
+}
+.event3-bg:hover {
+    background-image: linear-gradient(rgba(56, 56, 56, 0.806), rgba(56, 56, 56, 0.6)), url('./img/hero.jpg');
+}
+.event4-bg:hover {
+    background-image: linear-gradient(rgba(56, 56, 56, 0.806), rgba(56, 56, 56, 0.6)), url('./img/1444x920_le-depart-du-marathon-de-paris-a-lieu-en-bas-de-l-arc-de-triomphe.webp');
+}
+.event5-bg:hover {
+    background-image: linear-gradient(rgba(56, 56, 56, 0.806), rgba(56, 56, 56, 0.6)), url('./img/triathlon-for-beginners-2x.jpg');
+}
+.event6-bg:hover {
+    background-image: linear-gradient(rgba(56, 56, 56, 0.806), rgba(56, 56, 56, 0.6)), url('./img/pexels-kindelmedia-9030291.jpg');
+}
+
+
+.event-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+}
+
+
+body {
+    overflow-x: hidden;
+}
+.swiper-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.swiper-pagination {
+    bottom: 10px;
+}
+
+/* General navigation bar styles */
+.navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #0b004f;
+    padding: 1.5rem;
+  }
+  
+  .RACER {
+    font-size: 2.25rem; /* text-4xl */
+    color: white;
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .RACER img {
+    width: 2.5rem; /* w-10 */
+  }
+  
+  .Sider {
+    display: flex;
+    gap: 1.5rem; /* space-x-6 */
+  }
+  
+  .Sider a {
+    color: gray;
+    font-size: 1.25rem; /* text-xl */
+    transition: color 0.3s;
+  }
+  
+  .Sider a.text-white {
+    color: white;
+  }
+  
+  .Sider a:hover {
+    color: #1e90ff; /* hover:text-blue-400 */
+  }
+  
+  /* Media query for screens with a max width of 641px */
+  @media (max-width: 641px) {
+    .navigation {
+      padding: 1rem; /* Adjust padding */
+    }
+    
+    .RACER {
+      font-size: 12px;
+    }
+  
+    .RACER img {
+      width: 20px; /* Adjust logo size */
+    }
+  
+    .Sider {
+      gap: 0.5rem; /* Reduce space between elements */
+    }
+  
+    .Sider a {
+      font-size: 12px;
+      margin-right: 4px; /* Adjust margin */
+    }
+  }
+  

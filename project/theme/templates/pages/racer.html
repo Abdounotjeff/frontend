@@ -1,97 +1,66 @@
-{% load static %}
+{% extends "base.html" %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Racer Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
+{% block title %} | Racer Dashboard {% endblock %}
 
+{% block content %}
+<div class="max-w-7xl mx-auto p-6">
     <!-- Header -->
-    <header class="bg-gray-900 text-white p-4 flex justify-between items-center shadow-md">
-        <h1 class="text-2xl font-bold">🏁 Racer Dashboard</h1>
-        <a href="{% url 'logout' %}" class="text-sm bg-red-500 px-3 py-1 rounded hover:bg-red-600">Logout</a>
-    </header>
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">
+        Welcome, {{ profile.user.username }}
+    </h1>
 
-    <!-- Main Container -->
-    <main class="flex-1 container mx-auto px-6 py-8">
-        <!-- Profile Card -->
-        <div class="bg-white shadow-lg rounded-2xl p-6 mb-8">
-            <h2 class="text-xl font-semibold mb-4">Profile</h2>
-            <div class="flex items-center space-x-6">
-                <img src="{{ pictures.0|default:'/static/images/default-avatar.png' }}" alt="Profile Picture"
-                     class="w-24 h-24 rounded-full border-4 border-blue-500 object-cover">
-                <div>
-                    <p class="text-lg font-bold">{{ profile.username }}</p>
-                    <p class="text-gray-600">{{ profile.email }}</p>
-                    <p class="text-gray-500 italic">Member since {{ profile.date_joined|date:"M d, Y" }}</p>
-                </div>
+    <!-- Profile Card -->
+    <div class="bg-white shadow-md rounded-lg p-6 mb-8">
+        <div class="flex items-center space-x-6">
+            <img src="{{ profile.profile_picture.url|default:'https://via.placeholder.com/150' }}" 
+                 alt="Profile Picture"
+                 class="w-24 h-24 rounded-full object-cover border-2 border-indigo-500">
+            <div>
+                <h2 class="text-2xl font-semibold text-gray-700">
+                    {{ profile.user.get_full_name|default:profile.user.username }}
+                </h2>
+                <p class="text-gray-500">@{{ profile.user.username }}</p>
+                <p class="mt-2 text-sm text-gray-600">
+                    Races: {{ stats.races_total }} | Podiums: {{ stats.podium }}
+                </p>
             </div>
-        </div>
-
-        <!-- Stats Section -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white shadow rounded-2xl p-6 text-center">
-                <p class="text-gray-500">Win Rate</p>
-                <p class="text-3xl font-bold text-green-600">{{ stats.win_rate }}</p>
-            </div>
-            <div class="bg-white shadow rounded-2xl p-6 text-center">
-                <p class="text-gray-500">Podium Rate</p>
-                <p class="text-3xl font-bold text-yellow-600">{{ stats.podium_rate }}</p>
-            </div>
-            <div class="bg-white shadow rounded-2xl p-6 text-center">
-                <p class="text-gray-500">Total Races</p>
-                <p class="text-3xl font-bold text-blue-600">{{ stats.races_total }}</p>
-            </div>
-        </div>
-
-        <!-- More Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div class="bg-white shadow rounded-2xl p-6">
-                <p class="text-gray-500">Podium Finishes</p>
-                <p class="text-2xl font-bold text-purple-600">{{ stats.podium }}</p>
-            </div>
-            <div class="bg-white shadow rounded-2xl p-6">
-                <p class="text-gray-500">First Place Finishes</p>
-                <p class="text-2xl font-bold text-pink-600">{{ stats.finished_first }}</p>
-            </div>
-        </div>
-
-        <!-- Gallery Section -->
-        <div class="bg-white shadow-lg rounded-2xl p-6">
-            <h2 class="text-xl font-semibold mb-4">Gallery</h2>
-            <div id="gallery" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {% for pic in pictures %}
-                    <img src="{{ pic }}" alt="Racer Picture"
-                         class="rounded-lg object-cover w-full h-40 shadow-md hover:scale-105 transition transform cursor-pointer"
-                         onclick="openModal('{{ pic }}')">
-                {% empty %}
-                    <p class="text-gray-500 italic">No pictures uploaded yet.</p>
-                {% endfor %}
-            </div>
-        </div>
-    </main>
-
-    <!-- Modal -->
-    <div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-        <div class="relative">
-            <button onclick="closeModal()" class="absolute top-2 right-2 bg-white rounded-full p-2 shadow hover:bg-gray-200">✖</button>
-            <img id="modalImg" src="" class="max-h-screen max-w-screen rounded-lg shadow-lg">
         </div>
     </div>
 
-    <!-- JS for Modal -->
-    <script>
-        function openModal(src) {
-            document.getElementById('modalImg').src = src;
-            document.getElementById('imageModal').classList.remove('hidden');
-        }
-        function closeModal() {
-            document.getElementById('imageModal').classList.add('hidden');
-        }
-    </script>
+    <!-- Statistics -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+        <div class="bg-indigo-100 text-indigo-700 rounded-xl p-4 text-center shadow">
+            <p class="text-lg font-bold">{{ stats.win_rate }}</p>
+            <p class="text-sm">Win Rate</p>
+        </div>
+        <div class="bg-green-100 text-green-700 rounded-xl p-4 text-center shadow">
+            <p class="text-lg font-bold">{{ stats.podium_rate }}</p>
+            <p class="text-sm">Podium Rate</p>
+        </div>
+        <div class="bg-yellow-100 text-yellow-700 rounded-xl p-4 text-center shadow">
+            <p class="text-lg font-bold">{{ stats.finished_first }}</p>
+            <p class="text-sm">First Place Finishes</p>
+        </div>
+        <div class="bg-purple-100 text-purple-700 rounded-xl p-4 text-center shadow">
+            <p class="text-lg font-bold">{{ stats.races_total }}</p>
+            <p class="text-sm">Total Races</p>
+        </div>
+    </div>
 
-</body>
-</html>
+    <!-- Pictures Gallery -->
+    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Your Race Moments</h2>
+    {% if pictures %}
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {% for pic in pictures %}
+                <div class="overflow-hidden rounded-lg shadow-lg">
+                    <img src="{{ pic.image.url }}" 
+                         alt="Race Picture"
+                         class="w-full h-40 object-cover transform hover:scale-105 transition duration-300">
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-gray-500 italic">No pictures uploaded yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

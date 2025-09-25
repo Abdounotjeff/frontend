@@ -8,6 +8,7 @@ urlpatterns = [
     path('login/', views.loginPage, name='loginPage'),
     path('RacerDashboard/', views.RacerDashboard, name='RacerDashboard'),
     path('activateEmail', views.activ, name='activ'),
+    path('',views.index, name='index'), 
     # path('OrganizerDashboard/', OrganizerDashboard.as_view(), name="organizer-dashboard"),
     # path('organizer/public/<str:username>/', PublicOrganizerProfile.as_view(), name='public-organizer-profile'),
     # path('organizer/profile/edit/', OrganizerProfileUpdate.as_view(), name='organizer-profile-update'),

@@ -1,0 +1,141 @@
+{% load static %}
+<style>
+
+    header {
+        width: 100%;
+        background-color: #162938;
+        padding: 20px 40px;
+    }
+    
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        max-width: 1200px;
+        margin: auto;
+    }
+    
+    .LOGO {
+        font-size: 2em;
+        color: #fff;
+        user-select: none;
+    }
+    
+    .navigation {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        transition: all 0.3s ease;
+    }
+    
+    .navigation a {
+        text-decoration: none;
+        color: #fff;
+        font-size: 1.1em;
+        font-weight: 500;
+        position: relative;
+    }
+    
+    .navigation a::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        left: 0;
+        bottom: -7px;
+        height: 3px;
+        border-radius: 5px;
+        background: #ffffff;
+        transform: scaleX(0);
+        transition: transform 0.5s;
+        transform-origin: right;
+    }
+    
+    .navigation a:hover::after {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+    
+    .btnlogin {
+        height: 50px;
+        width: 130px;
+        border: 2px solid #fff;
+        background: transparent;
+        color: #fff;
+        cursor: pointer;
+        font-size: 1.1em;
+        font-weight: 500;
+        border-radius: 7px;
+        transition: 0.5s;
+    }
+    
+    .btnlogin:hover {
+        background: #fff;
+        color: #162938;
+    }
+    
+    /* Burger Menu */
+    .menu-logo {
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        display: none;
+        fill: #fff;
+    }
+    
+    @media (max-width: 900px) {
+        .menu-logo {
+            display: block;
+        }
+    
+        .navigation {
+            flex-direction: column;
+            position: absolute;
+            top: 80px;
+            right: -100%;
+            width: 100%;
+            background-color: #162938;
+            padding: 20px;
+            text-align: center;
+            z-index: 1000;
+        }
+    
+        .navigation.active {
+            right: 0;
+        }
+    }
+    
+
+</style>
+<header>
+    <div class="header-container">
+        <h2 class="LOGO">IQlevel</h2>
+
+        <svg class="menu-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 18L20 18" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+            <path d="M4 12L20 12" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+            <path d="M4 6L20 6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+
+        <nav class="navigation" id="navMenu">
+            <a href="#">HOME</a>
+            <a href="#">ABOUT</a>
+            {% if request.user.is_authenticated %}
+                <button onclick="window.location.href='{% url 'loginPage' %}'" class="btnlogin">Logout</button>
+            {% else %}
+                <button onclick="window.location.href='{% url 'loginPage' %}'" class="btnlogin">Login</button>
+            {% endif %}
+        </nav>
+    </div>
+</header>
+
+
+<script>
+    const hamMenu = document.querySelector('.menu-logo');
+    const navMenu = document.querySelector('.navigation');
+
+    hamMenu.addEventListener('click', () => {
+        navMenu.classList.toggle('active');
+    });
+</script>

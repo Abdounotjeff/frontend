@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+{% block styl %}
+<title>Login</title>
+{% endblock %}
+
+{% block content %}
+<!-- log_in start -->
+<div class="w-full flex justify-center items-center pt-5">
+    <h1 class="text-5xl mx-auto">Welcome to RACER</h1>
+  </div>
+  
+  <!-- content start -->
+  <section class="flex flex-row-reverse flex-wrap w-full h-fit px-32 py-10">
+  
+    <!-- pic start -->
+    <div class="w-1/2 md:w-1/2 flex justify-center md:justify-start">
+        <img src="{% static 'img/space2.jpg' %}" alt="">
+    </div>
+    <!-- pic end -->
+  
+    <!-- form start -->
+     
+    <form method="POST" action=" {% url 'loginPage' %}" class="max-w-sm  w-full md:w-1/2 mx-auto">
+        {% csrf_token %}
+        <div class="mb-5">
+        <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Username</label>
+        <input type="username" name ="username" id="username" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm" placeholder="ex: Spongebob123" required />
+        </div>
+        <div class="mb-5">
+        <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Password</label>
+        <input type="password" name ="password" id="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm " placeholder ="****" required />
+        </div>
+        <input type="submit" class="w-full cursor-pointer bg-blue-500 hover:bg-violet-500 text-white font-bold py-2 px-4 border-b-4 border-violet-600 hover:border-violet-500 rounded"  value = "S'identifier">
+        <br>
+        {% if messages %}
+    <div class="fixed top-5 right-1/2 space-y-2 z-50">
+        {% for message in messages %}
+            <div class="px-4 py-3 rounded-lg shadow-md text-white 
+                {% if message.tags == 'error' %} bg-red-500 {% elif message.tags == 'success' %} bg-green-500 {% elif message.tags == 'warning' %} bg-yellow-500 {% elif message.tags == 'info' %} bg-blue-500 {% else %} bg-gray-500 {% endif %} ">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+        <br>
+        Don't have an account? <a href="{% url 'registerPage' %}" class="hover:underline font-bold">Register now!</a>
+        <br>
+        <p><a href="{% url 'loginPage' %}">Mot de passe oublié ?</a></p>
+
+    </form>
+    <!-- form end -->
+  
+  </section>
+  <!-- content end -->
+  
+  <!-- log_in end -->
+{% endblock %}

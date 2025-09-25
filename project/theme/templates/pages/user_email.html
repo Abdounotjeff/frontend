@@ -1,0 +1,12 @@
+{% autoescape off %}
+Hi {{user.username}}
+
+please click on the link below to confirm your registration:
+
+http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+
+If clicking the link above doesn't work, please copy and paste the URL in a new browser window instead.
+
+RACER
+
+{% endautoescape %}

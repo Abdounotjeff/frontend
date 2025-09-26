@@ -23,7 +23,7 @@ TYPE = (
 ###############  USERS Model here ###################################
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
-    role = models.CharField(choices=ROLE_CHOICES, default="Participant", null=False, blank=False)
+    role = models.CharField(choices=ROLE_CHOICES, default="Participant", null=False, blank=False, max_length=20)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -67,11 +67,11 @@ class Racer(models.Model):
     date_joined = models.DateField(auto_now_add=True)
     pfp = models.ImageField(upload_to="pfp", null=True)
     bio = models.TextField(default="Hi, I love racing!", null=True)
-    date_birth = models.DateField(null=True, auto_now_add=True)
+    date_birth = models.DateField(null=True)
     podium = models.IntegerField(default=0)
     finished_first = models.IntegerField(default=0)
     nbr_of_races = models.IntegerField(default=0)
-    speciality = models.CharField(choices=TYPE)
+    speciality = models.CharField(choices=TYPE, max_length=20, default="Cycling")
 
     @property
     def win_rate(self):
@@ -89,24 +89,6 @@ class Racer(models.Model):
         return Race.objects.filter(racers=self, raceinstance__date__gte=timezone.now())  # if RaceInstance model exists
 
 
-    """
-    {
-"id":"56",
-  "username": "alo",
-  "email": "jboy26539@gmail.com",
-  "password": "StrongPassword123!",
-  "role": "Participant",
-  
-  "tel": "0555123456",
-  "bio": "Competitive cyclist with a passion for speed.",
-  "date_birth": "1998-06-15",
-  "podium": 5,
-  "finished_first": 3,
-  "nbr_of_races": 20,
-  "speciality": "Mountain Biking"
-}
-
-    """
 
     def __str__(self):
         return self.user.username
@@ -145,11 +127,11 @@ class AllowedAge(models.Model):
 class Race(models.Model):
     organised_by = models.ForeignKey(Organizer, on_delete=models.CASCADE)
     racers = models.ManyToManyField(Racer)
-    type = models.CharField(choices=TYPE)
+    type = models.CharField(choices=TYPE, max_length=20)
     title = models.CharField(max_length=100)
     rules = models.TextField()
     description = models.TextField()
-    place = models.CharField() #this field to define a link to google maps
+    place = models.CharField(max_length=400) #this field to define a link to google maps
     Allowed_Ages = models.ManyToManyField(AllowedAge)
     date = models.DateTimeField(default=timezone.now)
     logo = models.ImageField()

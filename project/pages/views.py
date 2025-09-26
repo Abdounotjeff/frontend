@@ -43,10 +43,6 @@ def activateEmail(request, uidb64, token):
         print("3")
         user.save()
         messages.success(request, "Merce d'avoir vérifier votre Email!, tu peux s'incrire maintenant!")
-        if role == "Organizer":
-            Organizer.objects.create(user=user)
-        elif role == "Participant":
-            Racer.objects.create(user=user)
         return redirect('loginPage')
     else:
         print(4)
@@ -101,21 +97,30 @@ def createRacerProfile(request):
     try:
         # Prevent already created profile
         request.user.racer
+        print(2)
         return redirect('RacerDashboard')
     except Racer.DoesNotExist:
+        print(1)
         pass  
 
     if request.method == 'POST':
-        form = RacerForm(request.POST)
+        form = RacerForm(request.POST, request.FILES)  # ✅ include request.FILES
+        print(3)
         if form.is_valid():
+            print(4)
             racer = form.save(commit=False)
             racer.user = request.user
             racer.save()
+            print(6)
             return redirect('RacerDashboard')
+        else:
+            print(form.errors)  # ✅ show why it's failing
     else:
         form = RacerForm()
+        print(7)
 
     return render(request, 'racer/create_profile.html', {'form': form})
+
 
 
 @login_required
@@ -227,5 +232,5 @@ def RacerDashboard(request):
         "pictures": user_pictures,
     }
 
-    return render(request, "racer/dashboard.html", context)
+    return render(request, "pages/racer.html", context)
 

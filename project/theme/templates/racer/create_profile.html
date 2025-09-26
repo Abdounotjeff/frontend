@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+  <div class="max-w-2xl mx-auto mt-10 bg-white shadow-lg rounded-2xl p-8">
+    <h2 class="text-3xl font-bold text-center mb-6 text-gray-800">🏁 Create Your Racer Profile</h2>
+    
+    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+      {% csrf_token %}
+
+      <!-- Tel -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">📱 Phone Number</label>
+        {{ form.tel }}
+      </div>
+
+      <!-- Carte Biometrique -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">🪪 Carte Biometrique</label>
+        {{ form.carte_biometrique }}
+      </div>
+
+      <!-- Profile Picture -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">🖼️ Profile Picture</label>
+        {{ form.pfp }}
+        <img id="previewImg" class="mt-3 hidden w-32 h-32 rounded-full border-2 border-gray-300 object-cover" />
+      </div>
+
+      <!-- Bio -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">📝 Short Bio</label>
+        {{ form.bio }}
+      </div>
+
+      <!-- Date of Birth -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">🎂 Date of Birth</label>
+        {{ form.date_birth }}
+      </div>
+
+      <!-- Speciality -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">⚡ Speciality</label>
+        {{ form.speciality }}
+      </div>
+
+      <!-- Submit -->
+      <div class="pt-4">
+        <button type="submit" class="w-full bg-blue-600 text-white py-3 rounded-xl shadow-md hover:bg-blue-700 transition">
+          🚀 Save Profile
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Profile picture preview
+    document.addEventListener("DOMContentLoaded", function() {
+      const input = document.querySelector("input[name='pfp']");
+      const preview = document.getElementById("previewImg");
+
+      if (input) {
+        input.addEventListener("change", function(e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+              preview.src = event.target.result;
+              preview.classList.remove("hidden");
+            }
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+    });
+  </script>
+{% endblock content %}

@@ -1,73 +1,37 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Registration{% endblock %}
+
+{% block scripts %}
+<script>
+    const orgBtn = document.getElementById('organizer')
+
+    function openModal(){
+        document.window.href
+    }
+</script>
+{% endblock scripts %}
+
 {% block content %}
 
-<div class="w-full flex justify-center items-center pt-5">
-    <h1 class="text-4xl mx-auto">Welcome to Racer</h1>
+<!-- main -->
+<main class="w-full flex flex-wrap">
+  <div class="w-1/2 flex flex-col">
+    <!-- Cycling -->
+    <div onclick="#" id="organizer" 
+         class="flex flex-col justify-center bg-blue-600 items-center w-full min-h-screen py-44 px-32 gap-6 bg-cover bg-center cursor-pointer hover:bg-[linear-gradient(#383838ab,#383838ab),url('./dist/img/hero.jpg')]"
+         style="background-image:url('./dist/img/hero.jpg')">
+      <h1 class="text-6xl text-white">Organizer</h1>
+    </div>
   </div>
-  
-  <!-- content start -->
-  <section class="flex flex-row w-full h-fit px-32 py-20">
-  
-    <!-- pic start -->
-    <div class="w-1/2">
-        <img src="{% static 'img/space2.jpg' %}" alt="">
+
+  <div class="w-1/2 flex min-h-screen  flex-col">
+    <!-- Triathlon -->
+    <div onclick="openModal()" 
+         class="flex flex-col bg-black justify-center items-center w-full min-h-screen py-44 px-32 gap-6 bg-cover bg-center cursor-pointer hover:bg-[linear-gradient(#383838ab,#383838ab),url({% static "img/space2.jpg" %})]"
+         style="background-image:url('./dist/img/triathlon-for-beginners-2x.jpg')">
+      <h1 class="text-6xl text-white">Racer</h1>
     </div>
-    <!-- pic end -->
-    {% if messages %}
-    <div class="fixed top-5 right-1/2 space-y-2 z-50">
-        {% for message in messages %}
-            <div class="px-4 py-3 rounded-lg shadow-md text-white 
-                {% if message.tags == 'error' %} bg-red-500 {% elif message.tags == 'success' %} bg-green-500 {% elif message.tags == 'warning' %} bg-yellow-500 {% elif message.tags == 'info' %} bg-blue-500 {% else %} bg-gray-500 {% endif %} ">
-                {{ message }}
-            </div>
-        {% endfor %}
-    </div>
-{% endif %}
-    <!-- form start -->
-    <form method="POST" action="{% url 'registerPage' %}"  class="max-w-sm w-1/2 mx-auto">
-        {% csrf_token %}
-        <div class="mb-5">
-            <label for="username" class="block mb-2 text-sm font-medium text-gray-900">Username</label>
-            {{ form.username }}
-        </div>
-        <div class="mb-5">
-            <label for="last_name" class="block mb-2 text-sm font-medium text-gray-900">First Name</label>
-            {{ form.first_name }}
-        </div>
-        <div class="mb-5">
-            <label for="first_name" class="block mb-2 text-sm font-medium text-gray-900">Last Name</label>
-            {{ form.last_name }}
-        </div>
-        <div class="mb-5">
-            <label for="role" class="block mb-2 text-sm font-medium text-gray-900">role</label>
-            {{ form.role }}
-        </div>
-        <div class="mb-5">
-            <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Email</label>
-            {{ form.email }}
-        </div>
-        <div class="mb-5">
-            <label for="password1" class="block mb-2 text-sm font-medium text-gray-900">Password</label>
-            {{ form.password1 }}
-        </div>
-        <div class="mb-5">
-            <label for="password2" class="block mb-2 text-sm font-medium text-gray-900">Confirm Password</label>
-            {{ form.password2 }}
-        </div>
-        
-        
-        <input type="submit" id = "btn" value="Register" class="w-full cursor-pointer bg-blue-500 hover:bg-violet-500 text-white font-bold py-2 px-4 border-b-4 border-violet-600 hover:border-violet-500 rounded"><br> <br> already have an account? <a href="{% url 'loginPage' %}" class="hover:underline font-bold">Login!</a>
-        
-        <br>
-        
-        
-    </form>
-    <!-- form end -->
-  
-  </section>
-  <!-- content end -->
-  
-  <!-- log_in end -->
-{% endblock %}
+  </div>
+</main>
+
+{% endblock content %}

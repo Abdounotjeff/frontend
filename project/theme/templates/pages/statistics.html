@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistics | Account</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@1.14.0/dist/full.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<!-- nav start -->
+<nav class="flex items-center justify-between bg-[#0b004f] p-6 sm:p-4">
+  <h1 class="flex items-center text-4xl text-white sm:text-sm">
+    <img src="./dist/img/logo.png" alt="logo" class="w-10 sm:w-5 mr-2"> RACER
+  </h1>
+  <div class="flex gap-6 sm:gap-2">
+      <a href="./index.html" class="text-gray-400 text-xl sm:text-xs hover:text-blue-400 transition">HOME</a>
+      <a href="./champions.html" class="text-gray-400 text-xl sm:text-xs hover:text-blue-400 transition">Races</a>
+      <a href="./Statistics.html" class="text-white text-xl sm:text-xs hover:text-blue-400 transition">Statistics</a>
+      <a href="./index.html#About" class="text-gray-400 text-xl sm:text-xs hover:text-blue-400 transition">About</a>
+      <a href="./index.html#contact" class="text-gray-400 text-xl sm:text-xs hover:text-blue-400 transition">Contact</a>
+      <a href="./login.html" class="text-gray-400 text-xl sm:text-xs hover:text-blue-400 transition">Login</a>
+  </div>
+</nav>
+<!-- nav end -->
+
+<!-- main -->
+<main class="w-full flex flex-wrap">
+  <div class="w-1/2 flex flex-col">
+    <!-- Cycling -->
+    <div onclick="openModal()" 
+         class="flex flex-col justify-end items-center w-full py-44 px-32 gap-6 bg-cover bg-center cursor-pointer hover:bg-[linear-gradient(#383838ab,#383838ab),url('./dist/img/hero.jpg')]"
+         style="background-image:url('./dist/img/hero.jpg')">
+      <h1 class="text-6xl text-white">Cycling</h1>
+    </div>
+    <!-- Marathon -->
+    <div onclick="openModal()" 
+         class="flex flex-col justify-end items-center w-full py-44 px-32 gap-6 bg-cover bg-center cursor-pointer hover:bg-[linear-gradient(#383838ab,#383838ab),url('./dist/img/1444x920_le-depart-du-marathon-de-paris-a-lieu-en-bas-de-l-arc-de-triomphe.webp')]"
+         style="background-image:url('./dist/img/1444x920_le-depart-du-marathon-de-paris-a-lieu-en-bas-de-l-arc-de-triomphe.webp')">
+      <h1 class="text-6xl text-white">Marathon</h1>
+    </div>
+    <!-- Swimming -->
+    <div onclick="openModal()" 
+         class="flex flex-col justify-end items-center w-full py-44 px-32 gap-6 bg-cover bg-center cursor-pointer hover:bg-[linear-gradient(#383838ab,#383838ab),url('./dist/img/pexels-kindelmedia-9030291.jpg')]"
+         style="background-image:url('./dist/img/pexels-kindelmedia-9030291.jpg')">
+      <h1 class="text-6xl text-white">Swimming</h1>
+    </div>
+  </div>
+
+  <div class="w-1/2 flex flex-col">
+    <!-- Triathlon -->
+    <div onclick="openModal()" 
+         class="flex flex-col justify-end items-center w-full py-44 px-32 gap-6 bg-cover bg-center cursor-pointer hover:bg-[linear-gradient(#383838ab,#383838ab),url('./dist/img/triathlon-for-beginners-2x.jpg')]"
+         style="background-image:url('./dist/img/triathlon-for-beginners-2x.jpg')">
+      <h1 class="text-6xl text-white">Triathlon</h1>
+    </div>
+    <!-- Rally -->
+    <div onclick="openModal()" 
+         class="flex flex-col justify-end items-center w-full py-44 px-32 gap-6 bg-cover bg-center cursor-pointer hover:bg-[linear-gradient(#383838ab,#383838ab),url('./dist/img/Rallye_Cardabelles.jpg')]"
+         style="background-image:url('./dist/img/Rallye_Cardabelles.jpg')">
+      <h1 class="text-6xl text-white">Rally Racing</h1>
+    </div>
+    <!-- Motorcycle -->
+    <div onclick="openModal()" 
+         class="flex flex-col justify-end items-center w-full py-44 px-32 gap-6 bg-cover bg-center cursor-pointer hover:bg-[linear-gradient(#383838ab,#383838ab),url('./dist/img/KTM-RC16-Red-Bull-MotoGP-Philip-Platzer-scaled.webp')]"
+         style="background-image:url('./dist/img/KTM-RC16-Red-Bull-MotoGP-Philip-Platzer-scaled.webp')">
+      <h1 class="text-6xl text-white">Motorcycle</h1>
+    </div>
+  </div>
+</main>
+
+<!-- footer -->
+<footer class="bg-gray-800 text-white p-4 text-center">
+  <p>ALL RIGHTS RESERVED. COPYRIGHT 2024 &copy;</p>
+</footer>
+
+<!-- Modal -->
+<div id="modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden" onclick="closeModal()">
+  <div class="bg-white text-black p-8 rounded-lg w-9/12 h-5/6 overflow-y-scroll" onclick="event.stopPropagation()">
+    <h2 class="text-2xl font-bold mb-4">Rankings</h2>
+    <div class="h-4/5 w-full overflow-scroll">
+      <table class="table w-full mt-4">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>YOB</th>
+            <th>Wilaya</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><a href="./Racer.html">Berradj Abderrahmen</a></td>
+            <td>2005</td>
+            <td>Annaba</td>
+            <td>200</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><a href="./Racer.html">Another Racer</a></td>
+            <td>2002</td>
+            <td>Oran</td>
+            <td>180</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><a href="./Racer.html">Third Racer</a></td>
+            <td>2000</td>
+            <td>Algiers</td>
+            <td>160</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <button class="mt-6 bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+<script>
+  function openModal() {
+    document.getElementById('modal').classList.remove('hidden');
+  }
+  function closeModal() {
+    document.getElementById('modal').classList.add('hidden');
+  }
+</script>
+</body>
+</html>

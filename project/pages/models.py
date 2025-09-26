@@ -22,8 +22,8 @@ TYPE = (
 )
 ###############  USERS Model here ###################################
 class CustomUser(AbstractUser):
-    email = models.EmailField()
-    role = models.CharField(choices=ROLE_CHOICES, default="Participant")
+    email = models.EmailField(unique=True)
+    role = models.CharField(choices=ROLE_CHOICES, default="Participant", null=False, blank=False)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -48,29 +48,29 @@ class CustomUser(AbstractUser):
 
 class Organizer(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    tel = models.CharField(max_length=10,default="0")
-    carte_biometrique = models.ImageField()
+    tel = models.CharField(max_length=10,default="+213")
+    carte_biometrique = models.ImageField(null=True)
     date_joined = models.DateField(auto_now_add=True)
-    pfp = models.ImageField(upload_to="pfp")
-    bio = models.TextField()
+    pfp = models.ImageField(upload_to="pfp", default="img/pfp.webp")
+    bio = models.TextField(default="Hi, I make racing events!", null=True)
 
     def __str__(self):
         return self.user.username
     
     def getPictures(self):
-        return pictures.objects.filter(user=self.user)
+        return Pictures.objects.filter(user=self.user)
     
 class Racer(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    tel = models.CharField(max_length=10,default="0")
-    carte_biometrique = models.ImageField()
+    tel = models.CharField(max_length=10,default="+213")
+    carte_biometrique = models.ImageField(null=True)
     date_joined = models.DateField(auto_now_add=True)
-    pfp = models.ImageField(upload_to="pfp")
-    bio = models.TextField()
-    date_birth = models.DateField()
-    podium = models.IntegerField()
-    finished_first = models.IntegerField()
-    nbr_of_races = models.IntegerField()
+    pfp = models.ImageField(upload_to="pfp", null=True)
+    bio = models.TextField(default="Hi, I love racing!", null=True)
+    date_birth = models.DateField(null=True, auto_now_add=True)
+    podium = models.IntegerField(default=0)
+    finished_first = models.IntegerField(default=0)
+    nbr_of_races = models.IntegerField(default=0)
     speciality = models.CharField(choices=TYPE)
 
     @property

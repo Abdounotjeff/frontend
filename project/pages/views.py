@@ -95,6 +95,49 @@ def resend_verification(request):
 
     return render(request, "pages/verify_code.html", {"user_email": email})
 
+
+@login_required
+def createRacerProfile(request):
+    try:
+        # Prevent already created profile
+        request.user.racer
+        return redirect('RacerDashboard')
+    except Racer.DoesNotExist:
+        pass  
+
+    if request.method == 'POST':
+        form = RacerForm(request.POST)
+        if form.is_valid():
+            racer = form.save(commit=False)
+            racer.user = request.user
+            racer.save()
+            return redirect('RacerDashboard')
+    else:
+        form = RacerForm()
+
+    return render(request, 'racer/create_profile.html', {'form': form})
+
+
+@login_required
+def createOrganizerProfile(request):
+    try:
+        request.user.organizer
+        return redirect('organizerDashboard')
+    except Organizer.DoesNotExist:
+        pass  
+
+    if request.method == 'POST':
+        form = OrganizerForm(request.POST)
+        if form.is_valid():
+            organizer = form.save(commit=False)
+            organizer.user = request.user
+            organizer.save()
+            return redirect('organizerDashboard')
+    else:
+        form = OrganizerForm()
+
+    return render(request, 'organizer/create_profile.html', {'form': form})
+
 # 🚀 Register View
 def registerPage(request):
     if request.method == 'POST':
@@ -107,11 +150,7 @@ def registerPage(request):
             request.session['pending_email'] = email  # Store email in session
             send_activation_email(request, user, email)
             # Create role-specific object
-            role = form.cleaned_data.get("role")
-            if role == "Organizer":
-                Organizer.objects.create(user=user)
-            elif role == "Participant":
-                Racer.objects.create(user=user)
+           
             return redirect('activ')
         else:
             print(form.errors)  # Debugging: Prints form errors in console
@@ -135,19 +174,26 @@ def loginPage(request):
         user = authenticate(request, username=username, password=password)
 
         if user is not None and user.is_active:
-            if user.role == 'Participant':  # Check the role directly on the CustomUser model
-                login(request, user)
+            login(request, user)
+
+            if user.is_Participant:
+                if not Racer.objects.filter(user=user).exists():
+                    return redirect('createRacerProfile')
                 return redirect('RacerDashboard')
-            elif user.role == 'organizer':  # Check the role directly on the CustomUser model
-                login(request, user)
+
+            elif user.is_Organizer:
+                if not Organizer.objects.filter(user=user).exists():
+                    return redirect('createOrganizerProfile')
                 return redirect('organizerDashboard')
+
             else:
-                login(request, user)
                 return redirect('/admin/')
+
         else:
             messages.info(request, 'Username OR password is incorrect')
 
     return render(request, 'pages/login.html', context={})
+
 
 def index(request):
     return render(request, 'pages/index.html')

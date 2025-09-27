@@ -24,6 +24,10 @@
                     Races: {{ stats.races_total }} | Podiums: {{ stats.podium }}
                 </p>
             </div>
+            {% if editable %}
+                <div class="btnEdit"><a href="{% url "editProfile" %}">Edit profile</a></div>
+                <div class="btnEdit"><a href="{% url "editUser" %}">Edit User</a></div>
+            {% endif %}
         </div>
     </div>
 

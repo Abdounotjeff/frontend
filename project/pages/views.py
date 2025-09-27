@@ -184,12 +184,12 @@ def loginPage(request):
             if user.is_Participant:
                 if not Racer.objects.filter(user=user).exists():
                     return redirect('createRacerProfile')
-                return redirect('RacerDashboard')
+                return redirect('profile', username=user.username)
 
             elif user.is_Organizer:
                 if not Organizer.objects.filter(user=user).exists():
                     return redirect('createOrganizerProfile')
-                return redirect('organizerDashboard')
+                return redirect('profile', username=user.username)
 
             else:
                 return redirect('/admin/')
@@ -208,54 +208,52 @@ def index(request):
     return render(request, 'pages/index.html')
 
 @login_required
-def RacerDashboard(request):
-    user = request.user
+def profile(request, username):
+    profile_user = get_object_or_404(CustomUser, username=username)  # user being visited
+    request_user = request.user  # user making the request
 
-    # Only Racers can access
-    if not user.is_Participant:
-        return render(request, "403.html", {"error": "You are not authorized as a Racer."})
-    print(1)
-    # Get Racer profile
-    racer_profile = get_object_or_404(Racer, user=user)
-    print(2)
-    # Stats
-    stats = {
-        "win_rate": f"{racer_profile.win_rate}%",
-        "podium_rate": f"{racer_profile.podium_rate}%",
-        "races_total": racer_profile.nbr_of_races,
-        "podium": racer_profile.podium,
-        "finished_first": racer_profile.finished_first,
-    }
+    # Condition flags
+    is_self = profile_user == request_user
+    is_participant = profile_user.is_Participant
+    is_organizer = profile_user.is_Organizer
 
-    # Pictures
-    user_pictures = Pictures.objects.filter(user=user)
+    # Case 1 & 2 → Participant profiles
+    if is_participant:
+        try:
+            racer_profile = Racer.objects.get(user=profile_user)
+        except Racer.DoesNotExist:
+            return render(request, "404.html", {"error": "Racer profile not found."}, status=404)
 
-    context = {
-        "profile": racer_profile,
-        "stats": stats,
-        "pictures": user_pictures,
-    }
+        stats = {
+            "win_rate": f"{racer_profile.win_rate}%",
+            "podium_rate": f"{racer_profile.podium_rate}%",
+            "races_total": racer_profile.nbr_of_races,
+            "podium": racer_profile.podium,
+            "finished_first": racer_profile.finished_first,
+        }
 
-    return render(request, "pages/racer.html", context)
+        pictures = Pictures.objects.filter(user=profile_user)
 
+        context = {
+            "profile": racer_profile,
+            "stats": stats,
+            "pictures": pictures,
+            "editable": is_self,  # ✅ editable only if it’s their own profile
+        }
 
-@login_required
-def OrganizerDashboard(request):
-    user = request.user
+        return render(request, "pages/racer.html", context)
 
-    if not user.is_Organizer:
-        return render(request, "403.html", {"error": "You are not authorized as an Organizer."}, status=403)
+    # Case 3 & 4 → Organizer profiles
+    elif is_organizer:
+        try:
+            organizer_profile = Organizer.objects.get(user=profile_user)
+        except Organizer.DoesNotExist:
+            return render(request, "404.html", {"error": "Organizer profile not found."}, status=404)
 
-    try:
-        organizer_profile = Organizer.objects.get(user=user)
-        races = Race.objects.filter(organised_by=organizer_profile).order_by('-date')
+        races = Race.objects.filter(organised_by=organizer_profile).order_by("-date")
         total_races = races.count()
 
-        race_table = []
-        total_signups = 0
-        most_popular_race = None
-        most_racers = 0
-
+        race_table, total_signups, most_popular_race, most_racers = [], 0, None, 0
         for race in races:
             num_racers = race.racers.count()
             total_signups += num_racers
@@ -264,19 +262,17 @@ def OrganizerDashboard(request):
                 "title": race.title,
                 "type": race.type,
                 "place": race.place,
-                "date": race.date.strftime('%Y-%m-%d %H:%M'),
+                "date": race.date.strftime("%Y-%m-%d %H:%M"),
                 "status": race.get_status(),
                 "racers_count": num_racers,
             }
-
             race_table.append(race_data)
 
             if num_racers > most_racers:
                 most_racers = num_racers
                 most_popular_race = race
 
-        # Top 3 races
-        top_races = sorted(race_table, key=lambda x: x['racers_count'], reverse=True)[:3]
+        top_races = sorted(race_table, key=lambda x: x["racers_count"], reverse=True)[:3]
 
         context = {
             "analytics": {
@@ -284,18 +280,18 @@ def OrganizerDashboard(request):
                 "most_popular_race": {
                     "title": most_popular_race.title if most_popular_race else None,
                     "racers_count": most_racers,
-                    "date": most_popular_race.date.strftime('%Y-%m-%d') if most_popular_race else None,
+                    "date": most_popular_race.date.strftime("%Y-%m-%d") if most_popular_race else None,
                 } if most_popular_race else {},
                 "average_racers_per_race": round(total_signups / total_races, 2) if total_races > 0 else 0,
                 "top_races": top_races,
             },
             "organizer": {
                 "id": organizer_profile.user.id,
-                "role": user.role,
+                "role": profile_user.role,
                 "pfp": organizer_profile.pfp.url if organizer_profile.pfp else None,
-                "username": user.username,
-                "full_name": f"{user.first_name} {user.last_name}".strip(),
-                "email": user.email,
+                "username": profile_user.username,
+                "full_name": f"{profile_user.first_name} {profile_user.last_name}".strip(),
+                "email": profile_user.email,
                 "tel": organizer_profile.tel,
                 "bio": organizer_profile.bio,
                 "date_joined": organizer_profile.date_joined,
@@ -303,9 +299,67 @@ def OrganizerDashboard(request):
                 "total_races_hosted": total_races,
             },
             "races": race_table,
+            "editable": is_self,  # ✅ editable only if it’s their own profile
         }
 
         return render(request, "pages/organizer.html", context)
 
-    except Organizer.DoesNotExist:
-        return render(request, "404.html", {"error": "Organizer profile not found."}, status=404)
+    else:
+        return render(request, "403.html", {"error": "Unknown role."}, status=403)
+    
+
+@login_required
+def editProfile(request):
+    user = request.user  # logged-in user
+
+    # If user is a participant (Racer)
+    if user.is_Participant:
+        racer_profile = get_object_or_404(Racer, user=user)
+
+        if request.method == "POST":
+            form = RacerForm(request.POST, request.FILES, instance=racer_profile)
+            if form.is_valid():
+                form.save()
+                return redirect("profile", username=user.username)
+        else:
+            form = RacerForm(instance=racer_profile)
+
+        return render(request, "pages/edit_profile.html", {"form": form, "role": "Racer"})
+
+    # If user is an organizer
+    elif user.is_Organizer:
+        organizer_profile = get_object_or_404(Organizer, user=user)
+
+        if request.method == "POST":
+            form = OrganizerForm(request.POST, request.FILES, instance=organizer_profile)
+            if form.is_valid():
+                form.save()
+                return redirect("profile", username=user.username)
+        else:
+            form = OrganizerForm(instance=organizer_profile)
+
+        return render(request, "pages/edit_profile.html", {"form": form, "role": "Organizer"})
+
+    else:
+        return render(request, "403.html", {"error": "You are not allowed to edit profiles."}, status=403)
+    
+@login_required
+def editUser(request):
+    user = request.user  # logged-in user
+
+    if request.method == "POST":
+        form = EditUserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            user.is_active = False
+            user.save()
+            email = form.cleaned_data.get('email')
+            request.session['pending_email'] = email  # Store email in session
+            send_activation_email(request, user, email)
+            # Create role-specific object
+           
+            return redirect('activ')
+    else:
+        form = EditUserForm(instance=user)
+
+    return render(request, "pages/edit_user.html", {"form": form})

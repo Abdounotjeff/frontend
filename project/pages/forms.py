@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth import get_user_model
 from .models import *
 
@@ -45,6 +45,14 @@ class CreateUserForm(UserCreationForm):
                 'class': common_classes,
                 'placeholder': "Confirm your Password"
             })
+
+class EditUserForm(UserChangeForm):
+    password = None  # Hide password field from normal editing
+
+    class Meta:
+        model = CustomUser
+        fields = ["username", "email", "first_name", "last_name", "role"]
+
 
 class OrganizerForm(forms.ModelForm):
     class Meta:

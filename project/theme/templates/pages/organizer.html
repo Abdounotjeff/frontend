@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="p-6 space-y-6">
+    <!-- Organizer Profile -->
+    <div class="bg-white shadow-md rounded-2xl p-6 flex items-center space-x-4">
+        <img src="{{ organizer.pfp|default:'/static/images/default-avatar.png' }}" 
+             alt="Profile Picture" 
+             class="w-20 h-20 rounded-full object-cover border-2 border-indigo-500">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">{{ organizer.full_name|default:organizer.username }}</h2>
+            <p class="text-sm text-gray-600">{{ organizer.role }}</p>
+            <p class="text-sm text-gray-500">{{ organizer.email }}</p>
+            <p class="text-sm text-gray-500">Joined: {{ organizer.date_joined|date:"M d, Y" }}</p>
+        </div>
+    </div>
+
+    <!-- Analytics -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-indigo-500 text-white rounded-2xl shadow-md p-6">
+            <p class="text-sm">Total Races</p>
+            <p class="text-3xl font-bold">{{ organizer.total_races_hosted }}</p>
+        </div>
+        <div class="bg-green-500 text-white rounded-2xl shadow-md p-6">
+            <p class="text-sm">Total Signups</p>
+            <p class="text-3xl font-bold">{{ analytics.total_signups }}</p>
+        </div>
+        <div class="bg-yellow-500 text-white rounded-2xl shadow-md p-6">
+            <p class="text-sm">Avg Racers / Race</p>
+            <p class="text-3xl font-bold">{{ analytics.average_racers_per_race }}</p>
+        </div>
+    </div>
+
+    <!-- Most Popular Race -->
+    {% if analytics.most_popular_race.title %}
+    <div class="bg-white shadow-md rounded-2xl p-6">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">Most Popular Race</h3>
+        <p class="text-lg font-bold text-indigo-600">{{ analytics.most_popular_race.title }}</p>
+        <p class="text-gray-600">Racers: {{ analytics.most_popular_race.racers_count }}</p>
+        <p class="text-gray-600">Date: {{ analytics.most_popular_race.date }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Top 3 Races -->
+    <div class="bg-white shadow-md rounded-2xl p-6">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">Top 3 Races</h3>
+        <ul class="space-y-2">
+            {% for race in analytics.top_races %}
+            <li class="flex justify-between border-b pb-2">
+                <span>{{ race.title }}</span>
+                <span class="text-indigo-600 font-medium">{{ race.racers_count }} racers</span>
+            </li>
+            {% empty %}
+            <p class="text-gray-500">No races available.</p>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- All Races Table -->
+    <div class="bg-white shadow-md rounded-2xl p-6">
+        <h3 class="text-xl font-semibold text-gray-800 mb-4">All Races</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-left border-collapse">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="p-3">Title</th>
+                        <th class="p-3">Type</th>
+                        <th class="p-3">Place</th>
+                        <th class="p-3">Date</th>
+                        <th class="p-3">Status</th>
+                        <th class="p-3">Racers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for race in races %}
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-3">{{ race.title }}</td>
+                        <td class="p-3">{{ race.type }}</td>
+                        <td class="p-3">{{ race.place }}</td>
+                        <td class="p-3">{{ race.date }}</td>
+                        <td class="p-3">
+                            <span class="px-2 py-1 rounded-full text-xs 
+                                {% if race.status == 'Upcoming' %}bg-blue-100 text-blue-600
+                                {% elif race.status == 'Completed' %}bg-green-100 text-green-600
+                                {% else %}bg-gray-100 text-gray-600{% endif %}">
+                                {{ race.status }}
+                            </span>
+                        </td>
+                        <td class="p-3">{{ race.racers_count }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="p-3 text-center text-gray-500">No races found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

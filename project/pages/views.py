@@ -132,7 +132,7 @@ def createOrganizerProfile(request):
         pass  
 
     if request.method == 'POST':
-        form = OrganizerForm(request.POST)
+        form = OrganizerForm(request.POST, request.FILES)
         if form.is_valid():
             organizer = form.save(commit=False)
             organizer.user = request.user
@@ -200,6 +200,10 @@ def loginPage(request):
     return render(request, 'pages/login.html', context={})
 
 
+def logout_view(request):
+    logout(request)
+    return redirect('loginPage')
+
 def index(request):
     return render(request, 'pages/index.html')
 
@@ -234,3 +238,74 @@ def RacerDashboard(request):
 
     return render(request, "pages/racer.html", context)
 
+
+@login_required
+def OrganizerDashboard(request):
+    user = request.user
+
+    if not user.is_Organizer:
+        return render(request, "403.html", {"error": "You are not authorized as an Organizer."}, status=403)
+
+    try:
+        organizer_profile = Organizer.objects.get(user=user)
+        races = Race.objects.filter(organised_by=organizer_profile).order_by('-date')
+        total_races = races.count()
+
+        race_table = []
+        total_signups = 0
+        most_popular_race = None
+        most_racers = 0
+
+        for race in races:
+            num_racers = race.racers.count()
+            total_signups += num_racers
+
+            race_data = {
+                "title": race.title,
+                "type": race.type,
+                "place": race.place,
+                "date": race.date.strftime('%Y-%m-%d %H:%M'),
+                "status": race.get_status(),
+                "racers_count": num_racers,
+            }
+
+            race_table.append(race_data)
+
+            if num_racers > most_racers:
+                most_racers = num_racers
+                most_popular_race = race
+
+        # Top 3 races
+        top_races = sorted(race_table, key=lambda x: x['racers_count'], reverse=True)[:3]
+
+        context = {
+            "analytics": {
+                "total_signups": total_signups,
+                "most_popular_race": {
+                    "title": most_popular_race.title if most_popular_race else None,
+                    "racers_count": most_racers,
+                    "date": most_popular_race.date.strftime('%Y-%m-%d') if most_popular_race else None,
+                } if most_popular_race else {},
+                "average_racers_per_race": round(total_signups / total_races, 2) if total_races > 0 else 0,
+                "top_races": top_races,
+            },
+            "organizer": {
+                "id": organizer_profile.user.id,
+                "role": user.role,
+                "pfp": organizer_profile.pfp.url if organizer_profile.pfp else None,
+                "username": user.username,
+                "full_name": f"{user.first_name} {user.last_name}".strip(),
+                "email": user.email,
+                "tel": organizer_profile.tel,
+                "bio": organizer_profile.bio,
+                "date_joined": organizer_profile.date_joined,
+                "location": race_table[0]["place"] if race_table else "N/A",
+                "total_races_hosted": total_races,
+            },
+            "races": race_table,
+        }
+
+        return render(request, "pages/organizer.html", context)
+
+    except Organizer.DoesNotExist:
+        return render(request, "404.html", {"error": "Organizer profile not found."}, status=404)

@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.contrib.auth import get_user_model, authenticate, login, logout
+from django.contrib.auth import get_user_model, authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.forms import inlineformset_factory
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib import messages
 from .models import *
 from .tokens import account_activation_token
@@ -145,7 +145,9 @@ def createOrganizerProfile(request):
 
 # 🚀 Register View
 def registerPage(request):
-    if request.method == 'POST':
+    if request.user.is_authenticated:
+        return redirect('profile', username=request.user.username)
+    elif request.method == 'POST':
         form = CreateUserForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False) 
@@ -172,7 +174,9 @@ def activ(request):
 
 # 🔐 Login View
 def loginPage(request):
-    if request.method == 'POST':
+    if request.user.is_authenticated:
+        return redirect('profile', username=request.user.username)
+    elif request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
 
@@ -363,3 +367,18 @@ def editUser(request):
         form = EditUserForm(instance=user)
 
     return render(request, "pages/edit_user.html", {"form": form})
+
+
+@login_required
+def change_password(request):
+    if request.method == "POST":
+        form = PasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Keep user logged in after password change
+            update_session_auth_hash(request, user)
+            return redirect("profile", username=request.user.username)
+    else:
+        form = PasswordChangeForm(user=request.user)
+
+    return render(request, "pages/change_password.html", {"form": form})

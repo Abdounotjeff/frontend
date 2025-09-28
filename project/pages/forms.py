@@ -48,10 +48,11 @@ class CreateUserForm(UserCreationForm):
 
 class EditUserForm(UserChangeForm):
     password = None  # Hide password field from normal editing
+    role = None
 
     class Meta:
         model = CustomUser
-        fields = ["username", "email", "first_name", "last_name", "role"]
+        fields = ["username", "email", "first_name", "last_name"]
 
 
 class OrganizerForm(forms.ModelForm):
@@ -62,3 +63,11 @@ class RacerForm(forms.ModelForm):
     class Meta:
         model =  Racer
         fields = ['tel', 'carte_biometrique','pfp','bio','date_birth','speciality']
+        widgets = {
+            'date_birth': forms.DateInput(
+                attrs={
+                    'type': 'date',
+                    'class': 'w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                }
+            ),
+        }

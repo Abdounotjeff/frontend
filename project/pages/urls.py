@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
@@ -13,7 +14,27 @@ urlpatterns = [
     path('createOrganizerProfile/', views.createOrganizerProfile, name="createOrganizerProfile"),
     path('editProfile/',views.editProfile, name='editProfile'),
     path('editUser/',views.editUser, name='editUser'),
+    path('editUser/passwordChange/',views.change_password, name='passwordChange'),
     path('<str:username>/',views.profile, name='profile'),
+    path('password/reset/', auth_views.PasswordResetView.as_view(
+        template_name='users/password_reset.html',
+        email_template_name='users/password_reset_email.html',
+        subject_template_name='users/password_reset_subject.txt',
+        success_url='done/'
+    ), name='password_reset'),
+
+    path('password/reset/done/', auth_views.PasswordResetDoneView.as_view(
+        template_name='users/password_reset_done.html'
+    ), name='password_reset_done'),
+
+    path('password/reset/confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
+        template_name='users/password_reset_confirm.html',
+        success_url='/users/password/reset/complete/'
+    ), name='password_reset_confirm'),
+
+    path('users/password/reset/complete/', auth_views.PasswordResetCompleteView.as_view(
+        template_name='users/password_reset_complete.html'
+    ), name='password_reset_complete'),
     
     # path('OrganizerDashboard/', OrganizerDashboard.as_view(), name="organizer-dashboard"),
     # path('organizer/public/<str:username>/', PublicOrganizerProfile.as_view(), name='public-organizer-profile'),

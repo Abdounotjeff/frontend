@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'tailwind',
     'theme',
     'pages',
+    "widget_tweaks",
 
 ]
 

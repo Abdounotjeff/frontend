@@ -26,7 +26,8 @@
     <section id="contact" class="flex flex-col items-center py-20 px-10 bg-gray-100">
         <h1 class="font-bold text-3xl text-violet-500 mb-8 text-center">CONTACT</h1>
         <div class="w-full md:w-1/2 bg-white rounded-lg p-6 shadow-md">
-            <form action="POST" class="flex flex-col space-y-4">
+            <form method="POST" action=" {% url 'index' %}" class="flex flex-col space-y-4">
+                {% csrf_token %}
                 <label for="name" class="font-semibold">Your Name:</label>
                 <input type="text" name="name" id="name" class="rounded-xl h-11 p-2 shadow-inner shadow-gray-400 focus:outline-none" placeholder="Enter your name..." required>
 
@@ -37,6 +38,17 @@
                 <textarea name="message" id="message" class="rounded-xl h-[100px] md:h-auto p-2 shadow-inner shadow-gray-400 focus:outline-none" placeholder="Enter your message" required></textarea>
 
                 <button type="submit" class="w-[100px] bg-violet-500 hover:bg-violet-800 duration-300 mt-3 rounded-lg text-white hover:scale-105 transition-transform">SUBMIT</button>
+            
+            {% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+            <div class="p-3 rounded-lg {% if message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+            
             </form>
         </div>
     </section>

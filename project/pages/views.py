@@ -8,7 +8,7 @@ from django.contrib import messages
 from .models import *
 from .tokens import account_activation_token
 from .forms import *
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, get_connection
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -32,34 +32,21 @@ def activateEmail(request, uidb64, token):
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = get_user_model().objects.get(pk=uid)
         role = user.role
-        print(role)
-        print("1")
     except:
         user = None
-        print(2)
     
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
-        print("3")
         user.save()
         messages.success(request, "Merce d'avoir vérifier votre Email!, tu peux s'incrire maintenant!")
         return redirect('loginPage')
     else:
-        print(4)
         messages.error(request, "Lien d'activation est invalide!")
     
     return redirect('registerPage')
 ##################################################################################
 
 def send_activation_email(request, user, to_email):
-    """
-    Sends an activation email to a user.
-
-    :param request: The request object passed to the view.
-    :param user: The user instance to send the email to.
-    :param to_email: The email address to send the email to.
-    :return: The number of emails sent.
-    """
     mail_subject = "Activate your account."
     message = render_to_string("pages/user_email.html", {
         'user': user,
@@ -92,32 +79,31 @@ def resend_verification(request):
     return render(request, "pages/verify_code.html", {"user_email": email})
 
 
+
+##################################################################################
+
+
+
 @login_required
 def createRacerProfile(request):
     try:
         # Prevent already created profile
         request.user.racer
-        print(2)
         return redirect('RacerDashboard')
     except Racer.DoesNotExist:
-        print(1)
         pass  
 
     if request.method == 'POST':
         form = RacerForm(request.POST, request.FILES)  # ✅ include request.FILES
-        print(3)
         if form.is_valid():
-            print(4)
             racer = form.save(commit=False)
             racer.user = request.user
             racer.save()
-            print(6)
             return redirect('RacerDashboard')
         else:
             print(form.errors)  # ✅ show why it's failing
     else:
         form = RacerForm()
-        print(7)
 
     return render(request, 'racer/create_profile.html', {'form': form})
 
@@ -208,8 +194,37 @@ def logout_view(request):
     logout(request)
     return redirect('loginPage')
 
+
+def send_email(to_email, msg):
+    mail_subject = "RACER Contact"
+    email = EmailMessage(
+        subject=mail_subject,
+        body=msg,
+        to=[to_email],
+        connection=get_connection()
+    )
+    return email.send()
+
 def index(request):
+    if request.method == 'POST':
+        username = request.POST.get('name')     # matches <input name="name">
+        email = request.POST.get('email')      # matches <input name="email">
+        message = request.POST.get('message')  # matches <textarea name="message">
+
+        # Construct the message you want to send
+        full_message = f"Message from {username} ({email}):\n\n{message}"
+
+        try:
+            # Example: send message to your admin email
+            send_email("bajpremium@gmail.com", full_message)
+            messages.success(request, "Your message has been sent successfully!")
+        except Exception as e:
+            messages.error(request, f"An error occurred: {e}")
+
+        return redirect("index")  # prevent resubmission on refresh
+
     return render(request, 'pages/index.html')
+
 
 @login_required
 def profile(request, username):

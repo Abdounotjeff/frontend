@@ -73,3 +73,8 @@ class RacerForm(forms.ModelForm):
         }
 
 
+class PicturesForm(forms.ModelForm):
+    class Meta:
+        model = Pictures
+        fields = ['IMG']
+

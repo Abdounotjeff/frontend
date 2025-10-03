@@ -89,7 +89,7 @@ def createRacerProfile(request):
     try:
         # Prevent already created profile
         request.user.racer
-        return redirect('RacerDashboard')
+        return redirect('profile', username = request.user.username)
     except Racer.DoesNotExist:
         pass  
 
@@ -99,7 +99,7 @@ def createRacerProfile(request):
             racer = form.save(commit=False)
             racer.user = request.user
             racer.save()
-            return redirect('RacerDashboard')
+            return redirect('profile', username = request.user.username)
         else:
             print(form.errors)  # ✅ show why it's failing
     else:
@@ -113,7 +113,7 @@ def createRacerProfile(request):
 def createOrganizerProfile(request):
     try:
         request.user.organizer
-        return redirect('organizerDashboard')
+        return redirect('profile', username = request.user.username)
     except Organizer.DoesNotExist:
         pass  
 
@@ -123,7 +123,7 @@ def createOrganizerProfile(request):
             organizer = form.save(commit=False)
             organizer.user = request.user
             organizer.save()
-            return redirect('organizerDashboard')
+            return redirect('profile', username = request.user.username)
     else:
         form = OrganizerForm()
 
@@ -397,3 +397,15 @@ def change_password(request):
         form = PasswordChangeForm(user=request.user)
 
     return render(request, "pages/change_password.html", {"form": form})
+
+def upload_picture(request):
+    if request.method == 'POST':
+        form = PicturesForm(request.POST, request.FILES)
+        if form.is_valid():
+            picture = form.save(commit=False)
+            picture.user = request.user
+            picture.save()
+            return redirect("profile", username=request.user.username)  # change to your redirect
+    else:
+        form = PicturesForm()
+    return render(request, 'pages/upload_picture.html', {'form': form})

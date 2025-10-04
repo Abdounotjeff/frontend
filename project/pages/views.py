@@ -409,3 +409,14 @@ def upload_picture(request):
     else:
         form = PicturesForm()
     return render(request, 'pages/upload_picture.html', {'form': form})
+
+
+
+def racers_list(request):
+    racers = Racer.objects.select_related('user').all()
+    return render(request, 'pages/racers_list.html', {'racers': racers})
+
+def organizers_list(request):
+    organizers = Organizer.objects.select_related('user').all()
+    return render(request, 'pages/organizers_list.html', {'organizers': organizers})
+

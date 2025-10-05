@@ -420,3 +420,23 @@ def organizers_list(request):
     organizers = Organizer.objects.select_related('user').all()
     return render(request, 'pages/organizers_list.html', {'organizers': organizers})
 
+def CreateRace(request):
+    if not request.user.is_authenticated or not request.user.is_Organizer:
+        return render(request, "404.html", {"error": "Oops, something went wrong."}, status=404)
+
+    if request.method == 'POST':
+        form = RaceCreationForm(request.POST, request.FILES)
+        if form.is_valid():
+            race = form.save(commit=False)
+            organizer = Organizer.objects.get(user=request.user)
+            race.organised_by = organizer
+            race.save()
+            form.save_m2m()  # to save ManyToMany fields (Allowed_Ages)
+            return redirect("index")
+        else:
+            print(form.errors)
+    else:
+        form = RaceCreationForm()
+
+    return render(request, 'pages/CreateRace.html', {'form': form})
+

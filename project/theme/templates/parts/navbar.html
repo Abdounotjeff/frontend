@@ -121,7 +121,8 @@
         <nav class="navigation" id="navMenu">
             <a href="{% url "index" %}">HOME</a>
             <a href="#">PROFILE</a>
-            <a href="{% url "racers" %}">USERS</a>
+            <a href="{% url "racers" %}">Racers</a>
+            <a href="{% url "organizers" %}">Organizers</a>
             {% if request.user.is_authenticated %}
                 <button onclick="window.location.href='{% url 'logout' %}'" class="btnlogin">Logout</button>
             {% else %}

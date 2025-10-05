@@ -440,3 +440,40 @@ def CreateRace(request):
 
     return render(request, 'pages/CreateRace.html', {'form': form})
 
+def race_detail(request, pk):
+    """
+    Display detailed information about a specific race.
+    """
+    race = get_object_or_404(Race, pk=pk)
+    racer = request.user
+    already_joined = race.racers.filter(user=racer).exists()
+    context = {
+        "race": race,
+        "is_joined": already_joined
+    }
+    return render(request, "pages/raceDetails.html", context)
+
+
+@login_required
+def join_race(request, race_id):
+    race = get_object_or_404(Race, id=race_id)
+
+    # Ensure user has a Racer profile
+    try:
+        racer = request.user.racer
+    except Racer.DoesNotExist:
+        messages.error(request, "Only racers can join races.")
+        return redirect("race_detail", race_id=race.id)
+
+    # Check membership by the Racer.user field (no reliance on racer.id)
+    already_joined = race.racers.filter(user=request.user).exists()
+
+    if already_joined:
+        messages.warning(request, "You have already joined this race.")
+    else:
+        race.racers.add(racer)            # add to M2M
+        racer.nbr_of_races += 1          # optional stat increment
+        racer.save()                     # persist racer changes
+        messages.success(request, "You successfully joined the race!")
+
+    return redirect("race_detail", pk=race.pk)

@@ -135,6 +135,7 @@ class Race(models.Model):
     Allowed_Ages = models.ManyToManyField(AllowedAge)
     date = models.DateTimeField(default=timezone.now)
     logo = models.ImageField()
+    price = models.IntegerField(default=0)
 
     def __str__(self):
         return self.title

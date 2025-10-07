@@ -17,6 +17,7 @@
         {% if editable %}
         <div class="btnEdit"><a href="{% url "editProfile" %}">Edit profile</a></div>
         <div class="btnEdit"><a href="{% url "editUser" %}">Edit User</a></div>
+        <div class="btnEdit"><a href="{% url "Create_race" %}">Create Race</a></div>
         {% endif %}
     </div>
 
@@ -40,7 +41,8 @@
     {% if analytics.most_popular_race.title %}
     <div class="bg-white shadow-md rounded-2xl p-6">
         <h3 class="text-xl font-semibold text-gray-800 mb-4">Most Popular Race</h3>
-        <p class="text-lg font-bold text-indigo-600">{{ analytics.most_popular_race.title }}</p>
+        
+        <p class="text-lg font-bold text-indigo-600"><a href={% url "race_detail" analytics.most_popular_race.pk %}> {{ analytics.most_popular_race.title }}</a></p>
         <p class="text-gray-600">Racers: {{ analytics.most_popular_race.racers_count }}</p>
         <p class="text-gray-600">Date: {{ analytics.most_popular_race.date }}</p>
     </div>
@@ -52,7 +54,11 @@
         <ul class="space-y-2">
             {% for race in analytics.top_races %}
             <li class="flex justify-between border-b pb-2">
-                <span>{{ race.title }}</span>
+                <span>{% if race.pk %}
+                            <a href="{% url 'race_detail' race.pk %}">{{ race.title }}</a>
+                        {% else %}
+                            {{ race.title }}
+                        {% endif %}</span>
                 <span class="text-indigo-600 font-medium">{{ race.racers_count }} racers</span>
             </li>
             {% empty %}
@@ -74,12 +80,19 @@
                         <th class="p-3">Date</th>
                         <th class="p-3">Status</th>
                         <th class="p-3">Racers</th>
+                        <th class="p-3">Modify</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for race in races %}
                     <tr class="border-b hover:bg-gray-50">
-                        <td class="p-3">{{ race.title }}</td>
+                        <td class="p-3">
+                        {% if race.pk %}
+                            <a href="{% url 'race_detail' race.pk %}">{{ race.title }}</a>
+                        {% else %}
+                            {{ race.title }}
+                        {% endif %}
+                        </td>
                         <td class="p-3">{{ race.type }}</td>
                         <td class="p-3">{{ race.place }}</td>
                         <td class="p-3">{{ race.date }}</td>
@@ -92,6 +105,7 @@
                             </span>
                         </td>
                         <td class="p-3">{{ race.racers_count }}</td>
+                        <td class="p-3"><a href="{% url "modify" race.pk %}">modify race</a></td>
                     </tr>
                     {% empty %}
                     <tr>

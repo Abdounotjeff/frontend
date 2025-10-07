@@ -8,6 +8,7 @@ from django.contrib import messages
 from .models import *
 from .tokens import account_activation_token
 from .forms import *
+from django.core.mail import send_mail
 from django.core.mail import EmailMessage, get_connection
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
@@ -284,6 +285,7 @@ def profile(request, username):
                 "date": race.date.strftime("%Y-%m-%d %H:%M"),
                 "status": race.get_status(),
                 "racers_count": num_racers,
+                "pk" : race.pk,
             }
             race_table.append(race_data)
 
@@ -300,6 +302,7 @@ def profile(request, username):
                     "title": most_popular_race.title if most_popular_race else None,
                     "racers_count": most_racers,
                     "date": most_popular_race.date.strftime("%Y-%m-%d") if most_popular_race else None,
+                    "pk": most_popular_race.pk if most_popular_race else None
                 } if most_popular_race else {},
                 "average_racers_per_race": round(total_signups / total_races, 2) if total_races > 0 else 0,
                 "top_races": top_races,
@@ -420,25 +423,59 @@ def organizers_list(request):
     organizers = Organizer.objects.select_related('user').all()
     return render(request, 'pages/organizers_list.html', {'organizers': organizers})
 
+@login_required
 def CreateRace(request):
     if not request.user.is_authenticated or not request.user.is_Organizer:
         return render(request, "404.html", {"error": "Oops, something went wrong."}, status=404)
 
     if request.method == 'POST':
+        # ✅ form must be defined before checking .is_valid()
         form = RaceCreationForm(request.POST, request.FILES)
         if form.is_valid():
             race = form.save(commit=False)
             organizer = Organizer.objects.get(user=request.user)
             race.organised_by = organizer
             race.save()
-            form.save_m2m()  # to save ManyToMany fields (Allowed_Ages)
+            form.save_m2m()  # Save ManyToMany (Allowed_Ages etc.)
+
+            # ✅ Notify racers by email (based on race type as speciality)
+            participants_emails = CustomUser.objects.filter(
+                role="Participant",
+                racer__speciality=race.type
+            ).values_list("email", flat=True)
+            participants_emails = list(participants_emails)
+
+            subject = f"You are invited to join {race.title}"
+            message = (
+                f"Hello racer!\n\n"
+                f"The race '{race.title}' has been created by the organizer.\n"
+                f"Details:\n"
+                f"Title: {race.title}\n"
+                f"Type: {race.type}\n"
+                f"Place: {race.place}\n"
+                f"Date: {race.date}\n\n"
+                f"Please check your dashboard for more info.\n\n"
+                f"— The Race Team"
+            )
+
+            if participants_emails:  # Avoid empty list
+                send_mail(
+                    subject,
+                    message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    participants_emails,
+                    fail_silently=True
+                )
+
             return redirect("index")
         else:
             print(form.errors)
+
     else:
         form = RaceCreationForm()
 
     return render(request, 'pages/CreateRace.html', {'form': form})
+
 
 def race_detail(request, pk):
     """
@@ -477,3 +514,100 @@ def join_race(request, race_id):
         messages.success(request, "You successfully joined the race!")
 
     return redirect("race_detail", pk=race.pk)
+
+
+@login_required
+def modify_race(request, pk):
+    race = get_object_or_404(Race, pk=pk)
+    race_title = race.title
+    # ✅ Get emails of all participants of this race
+    participants_emails = CustomUser.objects.filter(
+        racer__in=race.racers.all(),
+        role="Participant"
+    ).values_list("email", flat=True)
+
+    participants_emails = list(participants_emails)
+
+    # ✅ Allow only the organizer who created it to modify
+    if request.user.username == race.organised_by.user.username and request.user.is_Organizer:
+        if request.method == "POST":
+            form = RaceCreationForm(request.POST, instance=race)
+            if form.is_valid():
+                form.save()
+
+                # ✅ Notify racers by email
+                subject = f"Update on {race_title}"
+                message = (
+                    f"Hello racer!\n\n"
+                    f"The race '{race_title}' has been updated by the organizer.\n"
+                    f"New details:\n"
+                    f"Title: {race.title}\n"
+                    f"Type: {race.type}\n"
+                    f"Place: {race.place}\n"
+                    f"Date: {race.date}\n\n"
+                    f"Please check your dashboard for more info.\n\n"
+                    f"— The Race Team"
+                )
+
+                if participants_emails:  # avoid sending empty
+                    send_mail(
+                        subject,
+                        message,
+                        settings.DEFAULT_FROM_EMAIL,
+                        participants_emails,
+                        fail_silently=True
+                    )
+
+                return redirect("profile", username=request.user.username)
+        else:
+            form = RaceCreationForm(instance=race)
+
+        return render(request, "pages/EditRace.html", {"form": form , "race_pk": race.pk})
+
+    # ❌ Unauthorized access
+    return render(request, "403.html", {"error": "You are not allowed to modify this race."}, status=403)
+
+
+@login_required
+def delete_race(request, pk):
+    race = get_object_or_404(Race, pk=pk)
+
+    # ✅ Get all participant emails (same logic as modify)
+    participants_emails = CustomUser.objects.filter(
+        racer__in=race.racers.all(),
+        role="Participant"
+    ).values_list("email", flat=True)
+    participants_emails = list(participants_emails)
+
+    # ✅ Only the organizer who created the race can delete it
+    if request.user.username == race.organised_by.user.username and request.user.is_Organizer:
+        if request.method == "POST":
+            race_title = race.title  # store title before deletion
+            race.delete()
+
+            # ✅ Notify racers via email
+            subject = f"Race '{race_title}' has been cancelled"
+            message = (
+                f"Hello racer,\n\n"
+                f"We regret to inform you that the race '{race_title}' "
+                f"has been cancelled by the organizer.\n\n"
+                f"Thank you for your understanding.\n\n"
+                f"— The Race Team"
+            )
+
+            if participants_emails:
+                send_mail(
+                    subject,
+                    message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    participants_emails,
+                    fail_silently=True
+                )
+
+            return redirect("profile", username=request.user.username)
+
+        # ✅ If GET request, confirm deletion first
+        return render(request, "pages/DeleteRace.html", {"race": race})
+
+    # ❌ Unauthorized access
+    return render(request, "403.html", {"error": "You are not allowed to delete this race."}, status=403)

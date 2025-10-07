@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %} | Create Race {% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-8">🏁 Edit Race</h1>
+
+    <!-- Form Card -->
+    <div class="bg-white shadow-md rounded-xl p-8">
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit"
+            class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition duration-200">
+        Edit Race
+    </button>
+</form>
+
+<form method="POST" action="{% url 'delete' race_pk %}" class="mt-4" onsubmit="confirmDeletion(event)">
+            {% csrf_token %}
+            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition">Delete race</button>
+        </form>
+        
+        <div class="mt-4 text-center">
+            <a href="{% url 'profile' request.user.username %}" class="text-blue-600 hover:underline">Cancel</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

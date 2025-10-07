@@ -80,7 +80,9 @@
                         <th class="p-3">Date</th>
                         <th class="p-3">Status</th>
                         <th class="p-3">Racers</th>
+                        {% if editable %}
                         <th class="p-3">Modify</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
@@ -105,7 +107,9 @@
                             </span>
                         </td>
                         <td class="p-3">{{ race.racers_count }}</td>
+                        {% if editable %}
                         <td class="p-3"><a href="{% url "modify" race.pk %}">modify race</a></td>
+                        {% endif %}
                     </tr>
                     {% empty %}
                     <tr>

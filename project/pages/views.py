@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.forms import inlineformset_factory
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib import messages
+from django.core.paginator import Paginator
+from django.db.models import Count, Q
 from .models import *
 from .tokens import account_activation_token
 from .forms import *
@@ -244,6 +246,21 @@ def profile(request, username):
         except Racer.DoesNotExist:
             return render(request, "404.html", {"error": "Racer profile not found."}, status=404)
 
+        # ✅ Get all races this racer participated in
+        participated_races = Race.objects.filter(racers=racer_profile).order_by("-date")
+
+        race_table = []
+        for race in participated_races:
+            race_table.append({
+                "title": race.title,
+                "type": race.type,
+                "place": race.place,
+                "date": race.date.strftime("%Y-%m-%d %H:%M"),
+                "status": race.get_status(),
+                "organizer": race.organised_by.user.username,
+                "pk": race.pk,
+            })
+
         stats = {
             "win_rate": f"{racer_profile.win_rate}%",
             "podium_rate": f"{racer_profile.podium_rate}%",
@@ -258,10 +275,12 @@ def profile(request, username):
             "profile": racer_profile,
             "stats": stats,
             "pictures": pictures,
-            "editable": is_self,  # ✅ editable only if it’s their own profile
+            "races": race_table,   # ✅ Add race table to context
+            "editable": is_self,   # ✅ editable only if it’s their own profile
         }
 
         return render(request, "pages/racer.html", context)
+
 
     # Case 3 & 4 → Organizer profiles
     elif is_organizer:
@@ -611,3 +630,57 @@ def delete_race(request, pk):
 
     # ❌ Unauthorized access
     return render(request, "403.html", {"error": "You are not allowed to delete this race."}, status=403)
+
+
+def races_list(request):
+    q = request.GET.get("q")
+    category = request.GET.get("category")
+    sort = request.GET.get("sort")
+
+    # Base queryset
+    races = Race.objects.all()
+
+    # 🔍 Search
+    if q:
+        races = races.filter(
+            Q(title__icontains=q) |
+            Q(type__icontains=q) |
+            Q(place__icontains=q)
+        )
+
+    # 🏷️ Category filter
+    if category:
+        races = races.filter(type=category)
+
+    # 📊 Sorting logic
+    if sort == "popular":
+        # Annotate with racer count for popularity
+        races = races.annotate(racer_count=Count("racers")).order_by("-racer_count")
+    elif sort == "relevance":
+        races = races.order_by("title")
+    elif sort == "date":
+        races = races.order_by("-date")
+    elif sort == "region":
+        races = races.order_by("place")
+    else:
+        races = races.order_by("-date")
+
+    # Pagination
+    paginator = Paginator(races, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    # Categories
+    categories = Race.objects.values("type").annotate(count=Count("id")).order_by("type")
+
+    context = {
+        "races": page_obj,
+        "page_obj": page_obj,
+        "is_paginated": page_obj.has_other_pages(),
+        "categories": [{"name": c["type"], "count": c["count"]} for c in categories],
+        "sort_options": ["popular", "relevance", "date", "region"],
+        "request": request,
+    }
+    return render(request, "pages/races.html", context)
+
+

@@ -2,6 +2,17 @@
 {% block content %}
 
 <!-- Hero Section -->
+
+{% if messages %}
+    <div class="fixed top-5 right-1/2 space-y-2 z-50">
+        {% for message in messages %}
+            <div class="px-4 py-3 rounded-lg shadow-md text-white 
+                {% if message.tags == 'error' %} bg-red-500 {% elif message.tags == 'success' %} bg-green-500 {% elif message.tags == 'warning' %} bg-yellow-500 {% elif message.tags == 'info' %} bg-blue-500 {% else %} bg-gray-500 {% endif %} ">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
 <section
   class="flex flex-col justify-end items-start bg-center bg-cover w-full py-44 px-8 md:px-32 space-y-6"
   style="background-image: linear-gradient(#383838ab, #383838ab), url('/static/img/hero.jpg');"
@@ -21,16 +32,19 @@
     <div class="flex justify-between items-center border-b pb-6 mb-6">
       <h1 class="text-3xl md:text-5xl font-bold underline">{{ race.title }}</h1>
       
-    <form method="POST" action="{% url 'join_race' race.id %}">
-      {% csrf_token %}
-      <button type="submit"
-        class="border-2 border-gray-300 px-6 py-3 rounded-lg hover:bg-gray-500/60 transition">
-        JOIN NOW!
-      </button>
-    </form>
+    {% load tz %}  {# permet d'utiliser le filtre now avec timezone #}
 
-
-
+{% if race.date > now %}
+<form method="POST" action="{% url 'join_race' race.id %}">
+  {% csrf_token %}
+  <button type="submit"
+    class="border-2 border-gray-300 px-6 py-3 rounded-lg hover:bg-gray-500/60 transition">
+    JOIN NOW!
+  </button>
+</form>
+{% else %}
+<p class="text-red-500 font-semibold mt-2">Cette course est déjà terminée.</p>
+{% endif %}
 
     </div>
 

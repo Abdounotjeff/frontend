@@ -514,25 +514,48 @@ def race_detail(request, pk):
 def join_race(request, race_id):
     race = get_object_or_404(Race, id=race_id)
 
-    # Ensure user has a Racer profile
+    # --- Normalize race.date to an aware datetime (end of day for DateField) ---
+    race_dt = race.date
+
+    # If it's a date (no time), treat as end of that day
+    if isinstance(race_dt, date) and not isinstance(race_dt, datetime):
+        # use time.max to consider the whole day (23:59:59.999999)
+        race_dt = datetime.combine(race_dt, time.max)
+
+    # If race_dt is still naive, make it timezone-aware using current timezone
+    try:
+        if timezone.is_naive(race_dt):
+            race_dt = timezone.make_aware(race_dt, timezone.get_current_timezone())
+    except Exception:
+        # si pour une raison étrange race.date n'est pas un objet datetime/date,
+        # on refuse proprement l'opération
+        messages.error(request, "Date de course invalide.")
+        return redirect("race_detail", pk=race.pk)
+
+    # Compare with the current timezone-aware datetime
+    if race_dt < timezone.now():
+        messages.error(request, "Cette course est déjà terminée, vous ne pouvez plus la rejoindre.")
+        return redirect("race_detail", pk=race.pk)
+
+    # Vérifie si l'utilisateur a un profil Racer
     try:
         racer = request.user.racer
     except Racer.DoesNotExist:
-        messages.error(request, "Only racers can join races.")
-        return redirect("race_detail", race_id=race.id)
+        messages.error(request, "Seuls les coureurs peuvent rejoindre les courses.")
+        return redirect("race_detail", pk=race.pk)
 
-    # Check membership by the Racer.user field (no reliance on racer.id)
+    # Vérifie si l'utilisateur est déjà inscrit (par user)
     already_joined = race.racers.filter(user=request.user).exists()
 
     if already_joined:
-        messages.warning(request, "You have already joined this race.")
+        messages.warning(request, "Vous avez déjà rejoint cette course.")
     else:
-        race.racers.add(racer)            # add to M2M
-        racer.nbr_of_races += 1          # optional stat increment
-        racer.save()                     # persist racer changes
-        messages.success(request, "You successfully joined the race!")
+        race.racers.add(racer)
+        racer.nbr_of_races += 1
+        racer.save()
+        messages.success(request, "Vous avez rejoint la course avec succès !")
 
-    return redirect("race_detail", pk=race.pk)
+    return redirect("pages/raceDetails", pk=race.pk)
 
 
 @login_required

@@ -229,7 +229,7 @@ def index(request):
     return render(request, 'pages/index.html')
 
 
-@login_required
+
 def profile(request, username):
     profile_user = get_object_or_404(CustomUser, username=username)  # user being visited
     request_user = request.user  # user making the request
@@ -439,8 +439,25 @@ def racers_list(request):
     return render(request, 'pages/racers_list.html', {'racers': racers})
 
 def organizers_list(request):
-    organizers = Organizer.objects.select_related('user').all()
-    return render(request, 'pages/organizers_list.html', {'organizers': organizers})
+    organizers = Organizer.objects.all()
+    organizers_data = []
+
+    for organizer in organizers:
+        races = Race.objects.filter(organised_by=organizer)
+        total_races = races.count()
+        total_racers = sum(race.racers.count() for race in races)
+
+        avg_racers = round(total_racers / total_races, 2) if total_races > 0 else 0
+
+        organizers_data.append({
+            "organizer": organizer,
+            "total_races_hosted": total_races,
+            "average_racers_per_race": avg_racers,
+        })
+
+    context = {"organizers_data": organizers_data}
+    return render(request, "pages/organizers_list.html", context)
+
 
 @login_required
 def CreateRace(request):
@@ -501,7 +518,12 @@ def race_detail(request, pk):
     Display detailed information about a specific race.
     """
     race = get_object_or_404(Race, pk=pk)
-    racer = request.user
+    try:
+        racer = request.user
+        already_joined = race.racers.filter(user=racer).exists()
+    except:
+        already_joined = False
+        racer = None
     already_joined = race.racers.filter(user=racer).exists()
     context = {
         "race": race,

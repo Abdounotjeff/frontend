@@ -7,44 +7,47 @@ class CreateUserForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password2', 'role']
-        def __init__(self, *args, **kwargs):
-            super(CreateUserForm, self).__init__(*args, **kwargs)
 
-            common_classes = 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm'
+    def __init__(self, *args, **kwargs):
+        super(CreateUserForm, self).__init__(*args, **kwargs)
 
-            # Update widget attributes for username and email
-            self.fields['username'].widget.attrs.update({
-                'class': common_classes,
-                'placeholder': "Enter your username"
-            })
-            self.fields['email'].widget.attrs.update({
-                'class': common_classes,
-                'placeholder': "Example@mail.com"
-            })
-            
+        common_classes = 'w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm'
 
-            # Add first_name and last_name fields
-            self.fields['first_name'].widget.attrs.update({
-                'class': common_classes,
-                'placeholder': " Enter your First name"
-            })
-            self.fields['last_name'].widget.attrs.update({
-                'class': common_classes,
-                'placeholder': "Enter your Last name"
-            })
-            self.fields['role'].widget.attrs.update({
-                'class': common_classes,
-            })
+        # Update widget attributes for username and email
+        self.fields['username'].widget.attrs.update({
+            'class': common_classes,
+            'placeholder': "Enter your username"
+        })
+        self.fields['email'].widget.attrs.update({
+            'class': common_classes,
+            'placeholder': "Example@mail.com"
+        })
 
-            # Manually override password fields
-            self.fields['password1'].widget = forms.PasswordInput(attrs={
-                'class': common_classes,
-                'placeholder': "Your Password goes here"
-            })
-            self.fields['password2'].widget = forms.PasswordInput(attrs={
-                'class': common_classes,
-                'placeholder': "Confirm your Password"
-            })
+        # Add first_name and last_name fields
+        self.fields['first_name'].widget.attrs.update({
+            'class': common_classes,
+            'placeholder': "Enter your First name"
+        })
+        self.fields['last_name'].widget.attrs.update({
+            'class': common_classes,
+            'placeholder': "Enter your Last name"
+        })
+
+        # Role
+        self.fields['role'].widget.attrs.update({
+            'class': common_classes,
+        })
+
+        # Passwords
+        self.fields['password1'].widget = forms.PasswordInput(attrs={
+            'class': common_classes,
+            'placeholder': "Your Password goes here"
+        })
+        self.fields['password2'].widget = forms.PasswordInput(attrs={
+            'class': common_classes,
+            'placeholder': "Confirm your Password"
+        })
+
 
 class EditUserForm(UserChangeForm):
     password = None  # Hide password field from normal editing
@@ -81,7 +84,7 @@ class PicturesForm(forms.ModelForm):
 class RaceCreationForm(forms.ModelForm):
     class Meta:
         model = Race
-        fields = ['type', 'title', 'rules', 'description', 'place', 'date', 'logo', 'Allowed_Ages']
+        fields = ['type', 'title', 'rules', 'description', 'place', 'wilaya','price','date', 'logo', 'Allowed_Ages']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

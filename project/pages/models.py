@@ -124,6 +124,7 @@ class AllowedAge(models.Model):
     def __str__(self):
         return f"Age Category: {self.name}"
 
+
 class Race(models.Model):
     organised_by = models.ForeignKey(Organizer, on_delete=models.CASCADE)
     racers = models.ManyToManyField(Racer)
@@ -132,6 +133,7 @@ class Race(models.Model):
     rules = models.TextField()
     description = models.TextField()
     place = models.CharField(max_length=400) #this field to define a link to google maps
+    wilaya = models.CharField(max_length=20, default="Annaba")
     Allowed_Ages = models.ManyToManyField(AllowedAge)
     date = models.DateTimeField(default=timezone.now)
     logo = models.ImageField()
@@ -151,6 +153,23 @@ class Race(models.Model):
 
     def getAllowedAgesAsList(self):
         return list(self.Allowed_Ages.values_list("name", flat=True))
+    def get_embed_map_url(self):
+        """
+        Retourne un lien d'intégration Google Maps (ou OpenStreetMap si non supporté)
+        """
+        if not self.place:
+            return None
+
+        # Si le lien est déjà un embed, on le garde
+        if "google.com/maps/embed" in self.place:
+            return self.place
+
+        # Si c’est un lien Google Maps normal
+        if "google.com/maps" in self.place or "goo.gl/maps" in self.place:
+            return self.place.replace("/maps/", "/maps/embed/")
+
+        # Sinon on retourne None (ou une carte OSM par défaut)
+        return "https://www.openstreetmap.org/export/embed.html?bbox=2.8,36.7,3.2,36.9&layer=mapnik"
 
     
 ######################## PLAN and SUBSCRIPTION ################

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<div class="p-6 space-y-6">
+<div class="py-6 px-36 space-y-6">
     <!-- Organizer Profile -->
     <div class="bg-white shadow-md rounded-2xl p-6 flex items-center space-x-4">
         <img src="{{ organizer.pfp|default:'/static/images/default-avatar.png' }}" 
@@ -96,7 +96,7 @@
                         {% endif %}
                         </td>
                         <td class="p-3">{{ race.type }}</td>
-                        <td class="p-3">{{ race.place }}</td>
+                        <td class="p-3">{{ race.wilaya }}</td>
                         <td class="p-3">{{ race.date }}</td>
                         <td class="p-3">
                             <span class="px-2 py-1 rounded-full text-xs 

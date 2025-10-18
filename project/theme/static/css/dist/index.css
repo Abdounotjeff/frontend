@@ -2,6 +2,10 @@
 
 *{
     font-family: "Raleway", sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
 }
 .hero-bg {
     background-image: linear-gradient(rgba(56, 56, 56, 0.6), rgba(56, 56, 56, 0.6)), url('./img/hero.jpg');
@@ -60,6 +64,11 @@
 }
 
 
+.swiper-wrapper {
+  justify-content: center;
+}
+
+
 body {
     overflow-x: hidden;
 }
@@ -73,66 +82,3 @@ body {
     bottom: 10px;
 }
 
-/* General navigation bar styles */
-.navigation {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #0b004f;
-    padding: 1.5rem;
-  }
-  
-  .RACER {
-    font-size: 2.25rem; /* text-4xl */
-    color: white;
-    display: flex;
-    flex-direction: row;
-  }
-  
-  .RACER img {
-    width: 2.5rem; /* w-10 */
-  }
-  
-  .Sider {
-    display: flex;
-    gap: 1.5rem; /* space-x-6 */
-  }
-  
-  .Sider a {
-    color: gray;
-    font-size: 1.25rem; /* text-xl */
-    transition: color 0.3s;
-  }
-  
-  .Sider a.text-white {
-    color: white;
-  }
-  
-  .Sider a:hover {
-    color: #1e90ff; /* hover:text-blue-400 */
-  }
-  
-  /* Media query for screens with a max width of 641px */
-  @media (max-width: 641px) {
-    .navigation {
-      padding: 1rem; /* Adjust padding */
-    }
-    
-    .RACER {
-      font-size: 12px;
-    }
-  
-    .RACER img {
-      width: 20px; /* Adjust logo size */
-    }
-  
-    .Sider {
-      gap: 0.5rem; /* Reduce space between elements */
-    }
-  
-    .Sider a {
-      font-size: 12px;
-      margin-right: 4px; /* Adjust margin */
-    }
-  }
-  

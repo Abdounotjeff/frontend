@@ -3,7 +3,7 @@
 
     header {
         width: 100%;
-        background-color: #162938;
+        background-color: #0B004F;
         padding: 20px 40px;
     }
     
@@ -95,7 +95,6 @@
             top: 80px;
             right: -100%;
             width: 100%;
-            background-color: #162938;
             padding: 20px;
             text-align: center;
             z-index: 1000;
@@ -120,13 +119,13 @@
 
         <nav class="navigation" id="navMenu">
             <a href="{% url "index" %}">HOME</a>
-            <a href="#">PROFILE</a>
-            <a href="{% url "racers" %}">Racers</a>
-            <a href="{% url "organizers" %}">Organizers</a>
+            <a href="{% url "races" %}">EVENTS</a>
+            <a href="{% url "racers" %}">RACERS</a>
+            <a href="{% url "organizers" %}">OORGANIZERS</a>
             {% if request.user.is_authenticated %}
-                <button onclick="window.location.href='{% url 'logout' %}'" class="btnlogin">Logout</button>
+                <button onclick="window.location.href='{% url 'logout' %}'" class="btnlogin">LOGOUT</button>
             {% else %}
-                <button onclick="window.location.href='{% url 'loginPage' %}'" class="btnlogin">Login</button>
+                <button onclick="window.location.href='{% url 'loginPage' %}'" class="btnlogin">LOGIN</button>
             {% endif %}
         </nav>
     </div>

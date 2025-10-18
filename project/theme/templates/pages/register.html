@@ -12,7 +12,7 @@
   
     <!-- pic start -->
     <div class="w-1/2">
-        <img src="{% static 'img/space2.jpg' %}" alt="">
+        <img src="{% static 'css/dist/img/undraw_login_re_4vu2.svg' %}" alt="">
     </div>
     <!-- pic end -->
     {% if messages %}
@@ -41,7 +41,7 @@
             {{ form.last_name }}
         </div>
         <div class="mb-5">
-            <label for="role" class="block mb-2 text-sm font-medium text-gray-900">role</label>
+            <label for="role" class="block mb-2 text-sm font-medium text-gray-900">Role</label>
             {{ form.role }}
         </div>
         <div class="mb-5">
@@ -58,7 +58,7 @@
         </div>
         
         
-        <input type="submit" id = "btn" value="Register" class="w-full cursor-pointer bg-blue-500 hover:bg-violet-500 text-white font-bold py-2 px-4 border-b-4 border-violet-600 hover:border-violet-500 rounded"><br> <br> already have an account? <a href="{% url 'loginPage' %}" class="hover:underline font-bold">Login!</a>
+        <input type="submit" id = "btn" value="Register" class="w-full cursor-pointer bg-blue-500 hover:bg-blue-500 text-white font-bold py-2 px-4 border-b-4 border-blue-600 hover:border-blue-500 rounded"><br> <br> already have an account? <a href="{% url 'loginPage' %}" class="hover:underline font-bold">Login!</a>
         
         <br>
         

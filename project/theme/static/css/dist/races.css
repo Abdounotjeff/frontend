@@ -1,0 +1,6 @@
+.hero{
+    background-image: linear-gradient(#383838ab ,#383838ab), url('img/hero-chapion.jpg');
+}
+.hero2{
+    background-image: linear-gradient(#383838ab ,#383838ab), url('img/hero.jpg');
+}

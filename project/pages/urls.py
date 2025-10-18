@@ -24,6 +24,9 @@ urlpatterns = [
     path("race/<int:pk>/modify/", views.modify_race, name="modify"),
     path("race/<int:pk>/delete/",views.delete_race, name = "delete" ),
     path('races/', views.races_list, name='races'),
+    path("race/<int:pk>/participants/", views.race_participants_list, name="race_participants_list"),
+    path("race/<int:pk>/results/", views.race_results_view, name="race_results"),
+    path('race/<int:pk>/manageResults/', views.manage_race_results, name='manage_race_results'),
     path('<str:username>/',views.profile, name='profile'),
     path('password/reset/', auth_views.PasswordResetView.as_view(
         template_name='users/password_reset.html',

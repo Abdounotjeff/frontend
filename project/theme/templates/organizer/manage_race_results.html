@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="min-h-screen max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
+  <h2 class="text-2xl font-bold mb-4 text-center">Gérer les Résultats — {{ race.title }}</h2>
+  
+  <form method="post">
+    {% csrf_token %}
+    <div class="space-y-4">
+      {% for field in form %}
+      <div class="flex items-center justify-between border-b pb-2">
+        <label class="font-medium">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+        <p class="text-sm text-red-500">{{ field.errors }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-6">
+      <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+        Sauvegarder les Résultats
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

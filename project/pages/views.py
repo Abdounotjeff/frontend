@@ -341,6 +341,7 @@ def profile(request, username):
             },
             "races": race_table,
             "editable": is_self,  # ✅ editable only if it’s their own profile
+            "passed":race.date >= timezone.now()
         }
 
         return render(request, "pages/organizer.html", context)
@@ -583,53 +584,68 @@ def join_race(request, race_id):
 @login_required
 def modify_race(request, pk):
     race = get_object_or_404(Race, pk=pk)
+
+    # ✅ Bloquer la modification si la course est passée
+    if race.date <= timezone.now():
+        return render(request, "403.html", {
+            "error": "Vous ne pouvez plus modifier cette course car elle est déjà passée."
+        }, status=403)
+
+    # ✅ Vérifier que l'utilisateur est un organisateur
+    if not hasattr(request.user, "organizer"):
+        return render(request, "403.html", {
+            "error": "Vous devez être un organisateur pour modifier une course."
+        }, status=403)
+
+    # ✅ Vérifier qu'il est bien l'organisateur de cette course
+    if race.organised_by.user != request.user:
+        return render(request, "403.html", {
+            "error": "Vous ne pouvez modifier que vos propres courses."
+        }, status=403)
+
     race_title = race.title
+
     # ✅ Get emails of all participants of this race
     participants_emails = CustomUser.objects.filter(
         racer__in=race.racers.all(),
         role="Participant"
     ).values_list("email", flat=True)
-
     participants_emails = list(participants_emails)
 
-    # ✅ Allow only the organizer who created it to modify
-    if request.user.username == race.organised_by.user.username and request.user.is_Organizer:
-        if request.method == "POST":
-            form = RaceCreationForm(request.POST, instance=race)
-            if form.is_valid():
-                form.save()
+    # ✅ Gestion du formulaire
+    if request.method == "POST":
+        form = RaceCreationForm(request.POST, instance=race)
+        if form.is_valid():
+            form.save()
 
-                # ✅ Notify racers by email
-                subject = f"Update on {race_title}"
-                message = (
-                    f"Hello racer!\n\n"
-                    f"The race '{race_title}' has been updated by the organizer.\n"
-                    f"New details:\n"
-                    f"Title: {race.title}\n"
-                    f"Type: {race.type}\n"
-                    f"Place: {race.place}\n"
-                    f"Date: {race.date}\n\n"
-                    f"Please check your dashboard for more info.\n\n"
-                    f"— The Race Team"
+            # ✅ Notify racers by email
+            subject = f"Update on {race_title}"
+            message = (
+                f"Hello racer!\n\n"
+                f"The race '{race_title}' has been updated by the organizer.\n"
+                f"New details:\n"
+                f"Title: {race.title}\n"
+                f"Type: {race.type}\n"
+                f"Place: {race.place}\n"
+                f"Date: {race.date}\n\n"
+                f"Please check your dashboard for more info.\n\n"
+                f"— The Race Team"
+            )
+
+            if participants_emails:
+                send_mail(
+                    subject,
+                    message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    participants_emails,
+                    fail_silently=True
                 )
 
-                if participants_emails:  # avoid sending empty
-                    send_mail(
-                        subject,
-                        message,
-                        settings.DEFAULT_FROM_EMAIL,
-                        participants_emails,
-                        fail_silently=True
-                    )
+            return redirect("profile", username=request.user.username)
+    else:
+        form = RaceCreationForm(instance=race)
 
-                return redirect("profile", username=request.user.username)
-        else:
-            form = RaceCreationForm(instance=race)
-
-        return render(request, "pages/EditRace.html", {"form": form , "race_pk": race.pk})
-
-    # ❌ Unauthorized access
-    return render(request, "403.html", {"error": "You are not allowed to modify this race."}, status=403)
+    return render(request, "pages/EditRace.html", {"form": form, "race_pk": race.pk})
 
 
 @login_required
@@ -728,4 +744,77 @@ def races_list(request):
     }
     return render(request, "pages/races.html", context)
 
+@login_required
+def manage_race_results(request, pk):
+    race = get_object_or_404(Race, pk=pk, organised_by__user=request.user)
+    racers = race.racers.all()
 
+    if request.method == "POST":
+        form = RankingForm(request.POST, racers=racers)
+        if form.is_valid():
+            # Extraire tous les rangs soumis
+            ranking_data = {}
+            for racer in racers:
+                rank = form.cleaned_data.get(f'rank_{racer.id}')
+                if rank:
+                    ranking_data[racer] = rank
+
+            # Trier les participants selon leur rang
+            sorted_racers = sorted(ranking_data.items(), key=lambda x: x[1])
+
+            # Mettre à jour les statistiques
+            for idx, (racer, rank) in enumerate(sorted_racers, start=1):
+                racer.nbr_of_races += 1
+
+                # 1ère place
+                if rank == 1:
+                    racer.finished_first += 1
+                    racer.podium += 1
+
+                # 2e ou 3e place
+                elif rank in [2, 3]:
+                    racer.podium += 1
+
+                racer.save()
+            race.is_ranked = True
+            race.save()
+            return redirect('race_detail', pk=race.pk)
+
+    else:
+        form = RankingForm(racers=racers)
+
+    return render(request, "organizer/manage_race_results.html", {
+        "race": race,
+        "racers": racers,
+        "form": form
+    })
+
+def race_results_view(request, pk):
+    race = get_object_or_404(Race, pk=pk)
+    results = RaceResult.objects.filter(race=race).select_related("racer__user").order_by("rank")
+
+    context = {
+        "race": race,
+        "results": results,
+    }
+    return render(request, "pages/race_results.html", context)
+
+@login_required
+def race_participants_list(request, pk):
+    race = get_object_or_404(Race, pk=pk)
+
+    # 🔒 Vérifier que l'utilisateur est bien l'organisateur de cette course
+    if not hasattr(request.user, "organizer") or race.organised_by.user != request.user:
+        return render(request, "403.html", {
+            "error": "Vous n'êtes pas autorisé à consulter la liste des participants de cette course."
+        }, status=403)
+
+    # ✅ Récupérer les participants avec leurs infos
+    participants = race.racers.select_related("user").all()
+
+    context = {
+        "race": race,
+        "participants": participants,
+    }
+
+    return render(request, "pages/race_participants_list.html", context)

@@ -138,6 +138,7 @@ class Race(models.Model):
     date = models.DateTimeField(default=timezone.now)
     logo = models.ImageField()
     price = models.IntegerField(default=0)
+    is_ranked = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -170,6 +171,19 @@ class Race(models.Model):
 
         # Sinon on retourne None (ou une carte OSM par défaut)
         return "https://www.openstreetmap.org/export/embed.html?bbox=2.8,36.7,3.2,36.9&layer=mapnik"
+    
+class RaceResult(models.Model):
+    race = models.ForeignKey(Race, on_delete=models.CASCADE, related_name="results")
+    racer = models.ForeignKey(Racer, on_delete=models.CASCADE)
+    rank = models.PositiveIntegerField()
+
+    class Meta:
+        unique_together = ("race", "racer")
+        ordering = ["rank"]
+
+    def __str__(self):
+        return f"{self.racer.user.username} - {self.rank} ({self.race.title})"
+
 
     
 ######################## PLAN and SUBSCRIPTION ################

@@ -56,6 +56,7 @@ RACER | {{race.title}}
 </form>
 {% else %}
 <p class="text-red-500 font-semibold mt-2">Cette course est déjà terminée.</p>
+<a href="{% url "race_results" race.pk %}"> <u>voir le classement<u> </a>
 {% endif %}
 
     </div>

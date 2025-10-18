@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="min-h-screen max-w-3xl mx-auto mt-10">
+  <h1 class="text-3xl font-bold mb-6 text-center">{{ race.title }} — Résultats</h1>
+
+  {% if results %}
+    <table class="w-full border-collapse bg-white shadow-lg rounded-xl overflow-hidden">
+      <thead class="bg-gray-100 text-gray-700">
+        <tr>
+          <th class="px-4 py-2 text-left">#</th>
+          <th class="px-4 py-2 text-left">Participant</th>
+          <th class="px-4 py-2 text-left">Spécialité</th>
+          <th class="px-4 py-2 text-left">Win Rate</th>
+          <th class="px-4 py-2 text-left">Podium Rate</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for result in results %}
+        <tr class="border-b hover:bg-gray-50">
+          <td class="px-4 py-2 font-bold {% if result.rank == 1 %}text-yellow-500{% elif result.rank == 2 %}text-gray-400{% elif result.rank == 3 %}text-amber-700{% endif %}">
+            {{ result.rank }}
+          </td>
+          <td class="px-4 py-2">
+            <div class="flex items-center gap-3">
+              {% if result.racer.pfp %}
+                <img src="{{ result.racer.pfp.url }}" alt="" class="w-10 h-10 rounded-full object-cover">
+              {% endif %}
+              <span>{{ result.racer.user.username }}</span>
+            </div>
+          </td>
+          <td class="px-4 py-2">{{ result.racer.speciality }}</td>
+          <td class="px-4 py-2">{{ result.racer.win_rate }}%</td>
+          <td class="px-4 py-2">{{ result.racer.podium_rate }}%</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="text-center text-gray-500 mt-6">Aucun résultat n’a encore été publié pour cette course.</p>
+  {% endif %}
+</div>
+{% endblock %}

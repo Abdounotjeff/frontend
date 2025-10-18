@@ -99,3 +99,16 @@ class RaceCreationForm(forms.ModelForm):
         self.fields['place'].widget.attrs['placeholder'] = 'https://maps.google.com/...'
         self.fields['date'].widget.attrs['type'] = 'datetime-local'
 
+class RankingForm(forms.Form):
+    def __init__(self, *args, racers=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if racers:
+            for racer in racers:
+                self.fields[f'rank_{racer.id}'] = forms.IntegerField(
+                    required=False,
+                    label=f"{racer.user.get_full_name}",
+                    min_value=1,
+                    widget=forms.NumberInput(attrs={
+                        'class': 'w-24 border rounded p-1 text-center'
+                    })
+                )
